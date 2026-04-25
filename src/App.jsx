@@ -500,7 +500,9 @@ export default function App() {
   };
 
   const handleAddCombo = async () => {
-    const validSelections = comboForm.selections.filter(s => s.match && s.odds);
+    const validSelections = comboForm.selections
+      .filter(s => s.match && s.odds)
+      .map(s => ({ match: s.match, bet: s.bet === "Personnalisé" ? (s.customBet || s.bet) : s.bet, odds: s.odds }));
     if (validSelections.length < 2 || comboForm.confidence === 0) return;
     setSaving(true);
     const totalOdds = validSelections.reduce((acc, s) => acc * parseFloat(s.odds), 1).toFixed(2);
@@ -657,8 +659,9 @@ export default function App() {
                           <input value={sel.match} onChange={e => { const s = [...comboForm.selections]; s[i].match = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ex: PSG vs Lyon" style={{ ...inputStyle, marginBottom: "8px", fontSize: "13px" }} />
                           <div style={{ display: "flex", gap: "8px" }}>
                             <select value={sel.bet} onChange={e => { const s = [...comboForm.selections]; s[i].bet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} style={{ ...inputStyle, cursor: "pointer", fontSize: "13px", flex: 1 }}>
-                              {BET_TYPES.filter(b => b !== "Personnalisé").map(b => <option key={b} value={b}>{b}</option>)}
+                              {BET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
                             </select>
+                            {sel.bet === "Personnalisé" && <input value={sel.customBet || ""} onChange={e => { const s = [...comboForm.selections]; s[i].customBet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ton pari..." style={{ ...inputStyle, fontSize: "13px", marginTop: "6px" }} />}
                             <input value={sel.odds} onChange={e => { const s = [...comboForm.selections]; s[i].odds = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Cote" style={{ ...inputStyle, fontSize: "13px", width: "90px" }} type="number" step="0.01" />
                           </div>
                         </div>
