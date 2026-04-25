@@ -41,13 +41,25 @@ const LEAGUES_INTERNATIONAL = [
 ];
 
 const ALL_LEAGUES = [...LEAGUES_NATIONAL, ...LEAGUES_INTERNATIONAL];
+
+const TENNIS_TOURS = [
+  { id: "atp", label: "ATP", flag: "🔵", color: "#1565c0" },
+  { id: "wta", label: "WTA", flag: "🟣", color: "#ad1457" },
+];
+const TENNIS_SLAMS = [
+  { id: "open_australie", label: "Open d'Australie", flag: "🇦🇺", color: "#29b6f6" },
+  { id: "roland_garros", label: "Roland Garros", flag: "🇫🇷", color: "#ffa726" },
+  { id: "wimbledon", label: "Wimbledon", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", color: "#66bb6a" },
+  { id: "us_open", label: "US Open", flag: "🇺🇸", color: "#42a5f5" },
+];
+const ALL_TENNIS = [...TENNIS_TOURS, ...TENNIS_SLAMS];
 const BET_TYPES = ["1", "N", "2", "1/N", "1/2", "N/2", "Plus de 2.5", "Moins de 2.5", "BTTS Oui", "BTTS Non", "Personnalisé"];
 
 const CONFIDENCE_CONFIG = {
-  1: { color: "#ef5350", label: "Très risqué" },
-  2: { color: "#ff7043", label: "Risqué" },
+  1: { color: "#444455", label: "Très risqué" },
+  2: { color: "#ef5350", label: "Risqué" },
   3: { color: "#ffa726", label: "Modéré" },
-  4: { color: "#c6d600", label: "Bon" },
+  4: { color: "#ffd166", label: "Bon" },
   5: { color: "#f0b429", label: "Excellent" },
 };
 
@@ -196,15 +208,15 @@ function HomeView({ tips, onLogoTap, loading }) {
           ].map(s => (
             <div key={s.label} style={{ background: "#0b0a07", padding: "20px 8px", textAlign: "center" }}>
               <div style={{ color: s.color, fontSize: "28px", fontWeight: "900", fontFamily: "monospace" }}>{s.value}</div>
-              <div style={{ color: "#2a2a35", fontSize: "8px", fontFamily: "monospace", letterSpacing: "2px", marginTop: "4px" }}>{s.label}</div>
+              <div style={{ color: "#888", fontSize: "8px", fontFamily: "monospace", letterSpacing: "2px", marginTop: "4px" }}>{s.label}</div>
             </div>
           ))}
         </div>
       </div>
       <div style={{ padding: "24px 20px" }}>
         {tips.filter(t => t.result).length > 0 && (
-          <div style={{ marginBottom: "16px" }}>
-            <div style={{ color: "#222", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "8px" }}>DERNIERS RÉSULTATS</div>
+          <div style={{ marginBottom: "24px" }}>
+            <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "8px" }}>DERNIERS RÉSULTATS</div>
             <div style={{ display: "flex", gap: "6px" }}>
               {tips.filter(t => t.result).slice(0, 5).map((t, i) => (
                 <div key={i} style={{ flex: 1, height: "36px", borderRadius: "10px", background: t.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${t.result === "win" ? "#66bb6a44" : "#ef535044"}`, display: "flex", alignItems: "center", justifyContent: "center", color: t.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>
@@ -388,7 +400,7 @@ export default function App() {
   const [form, setForm] = useState({
     sport: "football", match: "", bet: "1",
     customBet: "", odds: "", confidence: 0, note: "",
-    league: null, date: new Date().toLocaleDateString("fr-FR"),
+    league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
   });
 
   useEffect(() => {
@@ -449,7 +461,7 @@ export default function App() {
     }]).select();
     if (!error && data) {
       setTips([data[0], ...tips]);
-      setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", league: null, date: new Date().toLocaleDateString("fr-FR") });
+      setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
       setView("list");
     }
     setSaving(false);
@@ -470,6 +482,7 @@ export default function App() {
   const filtered = tips.filter(t => {
     if (filterSport && t.sport !== filterSport) return false;
     if (filterSport === "football" && activeLeague && t.league !== activeLeague) return false;
+    if (filterSport === "tennis" && activeLeague && t.league !== activeLeague) return false;
     return true;
   });
 
@@ -563,7 +576,57 @@ export default function App() {
               )}
             </div>
           )}
-          {filterSport !== "football" && (
+          {filterSport === "tennis" && (
+            <div style={{ marginBottom: "20px" }}>
+              {!activeLeague && (
+                <div>
+                  <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "12px" }}>CIRCUITS</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "7px", marginBottom: "16px" }}>
+                    {TENNIS_TOURS.map(t => (
+                      <button key={t.id} onClick={() => setActiveLeague(t.id)}
+                        style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
+                        onMouseEnter={e => { e.currentTarget.style.background = t.color + "22"; e.currentTarget.style.borderColor = t.color + "44"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
+                        <span style={{ fontSize: "22px" }}>{t.flag}</span>
+                        <span style={{ color: t.color, fontSize: "13px", fontWeight: "700", flex: 1, textAlign: "left" }}>{t.label}</span>
+                        <span style={{ color: "#333", fontSize: "18px" }}>›</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "12px" }}>GRAND CHELEM</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
+                    {TENNIS_SLAMS.map(t => (
+                      <button key={t.id} onClick={() => setActiveLeague(t.id)}
+                        style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
+                        onMouseEnter={e => { e.currentTarget.style.background = t.color + "22"; e.currentTarget.style.borderColor = t.color + "44"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
+                        <span style={{ fontSize: "22px" }}>{t.flag}</span>
+                        <span style={{ color: t.color, fontSize: "13px", fontWeight: "700", flex: 1, textAlign: "left" }}>{t.label}</span>
+                        <span style={{ color: "#333", fontSize: "18px" }}>›</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {activeLeague && (
+                <div>
+                  <button onClick={() => setActiveLeague(null)} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+                    <span style={{ fontSize: "24px" }}>{ALL_TENNIS.find(t => t.id === activeLeague)?.flag}</span>
+                    <span style={{ color: ALL_TENNIS.find(t => t.id === activeLeague)?.color, fontSize: "14px", fontWeight: "700" }}>{ALL_TENNIS.find(t => t.id === activeLeague)?.label}</span>
+                  </div>
+                  {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
+                    <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                      {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} />)}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+          {filterSport === "nba" && (
             loading ? <LoadingSpinner /> : filtered.length === 0 ? (
               <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
             ) : (
@@ -619,6 +682,37 @@ export default function App() {
                     style={{ background: form.league === league.id ? `${league.color}22` : BG3, border: `1px solid ${form.league === league.id ? league.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
                     <span style={{ fontSize: "18px" }}>{league.flag}</span>
                     <span style={{ color: form.league === league.id ? "#fff" : "#555", fontSize: "12px", fontWeight: "600" }}>{league.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {form.sport === "tennis" && (
+            <div style={{ marginBottom: "16px" }}>
+              <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>COMPÉTITION</div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                <span>🎾</span><span style={{ color: "#444", fontSize: "10px", fontFamily: "monospace" }}>CIRCUITS</span>
+                <div style={{ flex: 1, height: "1px", background: "#1e1e28" }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "5px", marginBottom: "12px" }}>
+                {TENNIS_TOURS.map(t => (
+                  <button key={t.id} onClick={() => setForm({ ...form, league: t.id })}
+                    style={{ background: form.league === t.id ? `${t.color}22` : BG3, border: `1px solid ${form.league === t.id ? t.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontSize: "18px" }}>{t.flag}</span>
+                    <span style={{ color: form.league === t.id ? t.color : "#555", fontSize: "12px", fontWeight: "600" }}>{t.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                <span>🏆</span><span style={{ color: "#444", fontSize: "10px", fontFamily: "monospace" }}>GRAND CHELEM</span>
+                <div style={{ flex: 1, height: "1px", background: "#1e1e28" }} />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                {TENNIS_SLAMS.map(t => (
+                  <button key={t.id} onClick={() => setForm({ ...form, league: t.id })}
+                    style={{ background: form.league === t.id ? `${t.color}22` : BG3, border: `1px solid ${form.league === t.id ? t.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span style={{ fontSize: "18px" }}>{t.flag}</span>
+                    <span style={{ color: form.league === t.id ? t.color : "#555", fontSize: "12px", fontWeight: "600" }}>{t.label}</span>
                   </button>
                 ))}
               </div>
