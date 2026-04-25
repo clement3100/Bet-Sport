@@ -108,7 +108,7 @@ function StarRating({ value, onChange }) {
   );
 }
 
-function TipCard({ tip, onDelete, onToggleResult, isAdmin }) {
+function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
   const sport = SPORTS.find(s => s.id === tip.sport) || SPORTS[0];
   const conf = CONFIDENCE_CONFIG[tip.confidence];
   return (
@@ -129,7 +129,12 @@ function TipCard({ tip, onDelete, onToggleResult, isAdmin }) {
               onMouseLeave={e => e.target.style.color = "#222"}>✕</button>
           )}
         </div>
-        <div style={{ color: "#fff", fontSize: "16px", fontWeight: "700", marginBottom: "8px" }}>{tip.match}</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+          <div style={{ color: "#fff", fontSize: "16px", fontWeight: "700" }}>{tip.match}</div>
+          {tip.result && tip.score && (
+            <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "4px 12px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "14px", fontFamily: "monospace", fontWeight: "700", flexShrink: 0, marginLeft: "8px" }}>{tip.score}</div>
+          )}
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
           <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{tip.bet}</div>
           {tip.odds && <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "12px", fontFamily: "monospace" }}>{tip.odds}</div>}
@@ -141,9 +146,19 @@ function TipCard({ tip, onDelete, onToggleResult, isAdmin }) {
             {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= tip.confidence ? conf?.color : "#1e1e28", fontSize: "14px" }}>★</span>)}
           </div>
           {isAdmin ? (
-            <div style={{ display: "flex", gap: "6px" }}>
-              <button onClick={() => onToggleResult(tip.id, "win")} style={{ background: tip.result === "win" ? "#66bb6a22" : "none", border: `1px solid ${tip.result === "win" ? "#66bb6a" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "win" ? "#66bb6a" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>WIN</button>
-              <button onClick={() => onToggleResult(tip.id, "loss")} style={{ background: tip.result === "loss" ? "#ef535022" : "none", border: `1px solid ${tip.result === "loss" ? "#ef5350" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "loss" ? "#ef5350" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>LOSS</button>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px" }}>
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button onClick={() => onToggleResult(tip.id, "win")} style={{ background: tip.result === "win" ? "#66bb6a22" : "none", border: `1px solid ${tip.result === "win" ? "#66bb6a" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "win" ? "#66bb6a" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>WIN</button>
+                <button onClick={() => onToggleResult(tip.id, "loss")} style={{ background: tip.result === "loss" ? "#ef535022" : "none", border: `1px solid ${tip.result === "loss" ? "#ef5350" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "loss" ? "#ef5350" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>LOSS</button>
+              </div>
+              {tip.result && (
+                <input
+                  value={tip.score || ""}
+                  onChange={e => onUpdateScore(tip.id, e.target.value)}
+                  placeholder="Score ex: 2 - 1"
+                  style={{ background: BG3, border: "1px solid #1e1e28", borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "11px", fontFamily: "monospace", width: "120px", outline: "none", textAlign: "center" }}
+                />
+              )}
             </div>
           ) : (
             tip.result && <div style={{ background: tip.result === "win" ? "#66bb6a18" : "#ef535018", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "4px 12px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", letterSpacing: "1px" }}>{tip.result === "win" ? "✓ WIN" : "✗ LOSS"}</div>
@@ -499,6 +514,11 @@ export default function App() {
     setTips(tips.map(t => t.id === id ? { ...t, result: newResult } : t));
   };
 
+  const handleUpdateScore = async (id, score) => {
+    await supabase.from("tips").update({ score }).eq("id", id);
+    setTips(tips.map(t => t.id === id ? { ...t, score } : t));
+  };
+
   const handleAddCombo = async () => {
     const validSelections = comboForm.selections
       .filter(s => s.match && s.odds)
@@ -630,7 +650,7 @@ export default function App() {
                     <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                      {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} />)}
+                      {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
                     </div>
                   )}
                 </div>
@@ -798,7 +818,7 @@ export default function App() {
                     <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                      {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} />)}
+                      {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
                     </div>
                   )}
                 </div>
@@ -810,7 +830,7 @@ export default function App() {
               <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} />)}
+                {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
               </div>
             )
           )}
@@ -819,7 +839,7 @@ export default function App() {
               <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} />)}
+                {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
               </div>
             )
           )}
