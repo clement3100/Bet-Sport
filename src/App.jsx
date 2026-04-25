@@ -752,6 +752,7 @@ export default function App() {
                   )}
                 </div>
               )}
+          {filterSport === "tennis" && (
             <div style={{ marginBottom: "20px" }}>
               {!activeLeague && (
                 <div>
