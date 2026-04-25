@@ -131,7 +131,7 @@ function TipCard({ tip, onDelete, onToggleResult, isAdmin }) {
         </div>
         <div style={{ color: "#fff", fontSize: "16px", fontWeight: "700", marginBottom: "8px" }}>{tip.match}</div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-          <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>{tip.bet}</div>
+          <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{tip.bet}</div>
           {tip.odds && <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "12px", fontFamily: "monospace" }}>{tip.odds}</div>}
         </div>
         {tip.note && <div style={{ color: "#444", fontSize: "12px", fontStyle: "italic", marginBottom: "10px" }}>{tip.note}</div>}
@@ -661,7 +661,7 @@ export default function App() {
                             <select value={sel.bet} onChange={e => { const s = [...comboForm.selections]; s[i].bet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} style={{ ...inputStyle, cursor: "pointer", fontSize: "13px", flex: 1 }}>
                               {BET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
                             </select>
-                            {sel.bet === "Personnalisé" && <input value={sel.customBet || ""} onChange={e => { const s = [...comboForm.selections]; s[i].customBet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ton pari..." style={{ ...inputStyle, fontSize: "13px", marginTop: "6px" }} />}
+                            {sel.bet === "Personnalisé" && <textarea value={sel.customBet || ""} onChange={e => { const s = [...comboForm.selections]; s[i].customBet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ton pari..." style={{ ...inputStyle, fontSize: "13px", marginTop: "6px", minHeight: "60px", resize: "vertical" }} />}
                             <input value={sel.odds} onChange={e => { const s = [...comboForm.selections]; s[i].odds = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Cote" style={{ ...inputStyle, fontSize: "13px", width: "90px" }} type="number" step="0.01" />
                           </div>
                         </div>
@@ -915,7 +915,7 @@ export default function App() {
             <select value={form.bet} onChange={e => setForm({ ...form, bet: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
               {BET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
-            {form.bet === "Personnalisé" && <input value={form.customBet} onChange={e => setForm({ ...form, customBet: e.target.value })} placeholder="Décris ton pari..." style={{ ...inputStyle, marginTop: "8px" }} />}
+            {form.bet === "Personnalisé" && <textarea value={form.customBet} onChange={e => setForm({ ...form, customBet: e.target.value })} placeholder="Décris ton pari..." style={{ ...inputStyle, marginTop: "8px", minHeight: "70px", resize: "vertical" }} />}
           </div>
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>COTE</div>
