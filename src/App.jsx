@@ -588,7 +588,7 @@ export default function App() {
                         onMouseEnter={e => { e.currentTarget.style.background = t.color + "22"; e.currentTarget.style.borderColor = t.color + "44"; }}
                         onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
                         <span style={{ fontSize: "22px" }}>{t.flag}</span>
-                        <span style={{ color: t.color, fontSize: "13px", fontWeight: "700", flex: 1, textAlign: "left" }}>{t.label}</span>
+                        <span style={{ color: "#fff", fontSize: "13px", fontWeight: "700", flex: 1, textAlign: "left" }}>{t.label}</span>
                         <span style={{ color: "#333", fontSize: "18px" }}>›</span>
                       </button>
                     ))}
