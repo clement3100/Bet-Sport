@@ -55,17 +55,17 @@ const TENNIS_SLAMS = [
 ];
 const ALL_TENNIS = [...TENNIS_TOURS, ...TENNIS_SLAMS];
 const LEAGUE_LOGOS = {
-  premier_league: "https://crests.football-data.org/PL.png",
-  ligue1: "https://crests.football-data.org/FL1.png",
-  laliga: "https://crests.football-data.org/PD.png",
-  bundesliga: "https://crests.football-data.org/BL1.png",
-  serie_a: "https://crests.football-data.org/SA.png",
-  saudi: "https://media.api-sports.io/football/leagues/307.png",
-  liga_portugal: "https://crests.football-data.org/PPL.png",
-  super_lig: "https://media.api-sports.io/football/leagues/203.png",
-  eredivisie: "https://crests.football-data.org/DED.png",
-  champions_league: "https://crests.football-data.org/CL.png",
-  world_cup: "https://media.api-sports.io/football/leagues/1.png",
+  premier_league: "https://www.thesportsdb.com/images/media/league/badge/i6o0kh1549879062.png",
+  ligue1: "https://www.thesportsdb.com/images/media/league/badge/lhgu2z1725377563.png",
+  laliga: "https://www.thesportsdb.com/images/media/league/badge/7onmyv1534768460.png",
+  bundesliga: "https://www.thesportsdb.com/images/media/league/badge/0j55yv1534764799.png",
+  serie_a: "https://www.thesportsdb.com/images/media/league/badge/wrwrqr1536070927.png",
+  saudi: "https://www.thesportsdb.com/images/media/league/badge/0tq7581648741171.png",
+  liga_portugal: "https://www.thesportsdb.com/images/media/league/badge/qnxwpi1534768460.png",
+  super_lig: "https://www.thesportsdb.com/images/media/league/badge/6kfssl1534768460.png",
+  eredivisie: "https://www.thesportsdb.com/images/media/league/badge/xqpx5n1534768460.png",
+  champions_league: "https://www.thesportsdb.com/images/media/league/badge/qowoxq1534768460.png",
+  world_cup: "https://www.thesportsdb.com/images/media/league/badge/qlb0io1715619635.png",
 };
 
 const CLUB_LOGOS = {
