@@ -256,7 +256,7 @@ function HomeView({ tips, onLogoTap, loading }) {
       </div>
       <div style={{ padding: "24px 20px" }}>
         {tips.filter(t => t.result).length > 0 && (
-          <div style={{ marginBottom: "24px" }}>
+          <div style={{ marginBottom: "36px" }}>
             <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "8px" }}>DERNIERS RÉSULTATS</div>
             <div style={{ display: "flex", gap: "6px" }}>
               {tips.filter(t => t.result).slice(0, 5).map((t, i) => (
