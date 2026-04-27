@@ -21,7 +21,6 @@ const SPORTS = [
   { id: "football", label: "Football", icon: "⚽", color: "#f0b429" },
   { id: "nba", label: "NBA", icon: "🏀", color: "#e07b39" },
   { id: "tennis", label: "Tennis", icon: "🎾", color: "#8bc34a" },
-  { id: "f1", label: "F1", icon: "🏎️", color: "#e53935" },
 ];
 
 const LEAGUES_NATIONAL = [
@@ -54,19 +53,7 @@ const TENNIS_SLAMS = [
   { id: "us_open", label: "US Open", flag: "🇺🇸", color: "#42a5f5" },
 ];
 const ALL_TENNIS = [...TENNIS_TOURS, ...TENNIS_SLAMS];
-const LEAGUE_LOGOS = {
-  premier_league: "https://www.thesportsdb.com/images/media/league/badge/i6o0kh1549879062.png",
-  ligue1: "https://www.thesportsdb.com/images/media/league/badge/lhgu2z1725377563.png",
-  laliga: "https://www.thesportsdb.com/images/media/league/badge/7onmyv1534768460.png",
-  bundesliga: "https://www.thesportsdb.com/images/media/league/badge/0j55yv1534764799.png",
-  serie_a: "https://www.thesportsdb.com/images/media/league/badge/wrwrqr1536070927.png",
-  saudi: "https://www.thesportsdb.com/images/media/league/badge/0tq7581648741171.png",
-  liga_portugal: "https://www.thesportsdb.com/images/media/league/badge/qnxwpi1534768460.png",
-  super_lig: "https://www.thesportsdb.com/images/media/league/badge/6kfssl1534768460.png",
-  eredivisie: "https://www.thesportsdb.com/images/media/league/badge/xqpx5n1534768460.png",
-  champions_league: "https://www.thesportsdb.com/images/media/league/badge/qowoxq1534768460.png",
-  world_cup: "https://www.thesportsdb.com/images/media/league/badge/qlb0io1715619635.png",
-};
+const LEAGUE_LOGOS = {};
 
 const CLUB_LOGOS = {
   // Ligue 1
@@ -330,26 +317,20 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
           )}
         </div>
 
-        {/* Match: logo - nom - heure/score - nom - logo */}
+        {/* Match: nom - heure/score - nom */}
         {hasTeams ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", gap: "8px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
-              <ClubLogo name={home} size={36} />
-              <span style={{ color: "#fff", fontSize: "13px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
-            </div>
-            <div style={{ flexShrink: 0, textAlign: "center", minWidth: "52px" }}>
+            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
+            <div style={{ flexShrink: 0, textAlign: "center", minWidth: "60px" }}>
               {tip.result && tip.score ? (
                 <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "14px", fontFamily: "monospace", fontWeight: "900" }}>{tip.score}</div>
               ) : tip.time ? (
-                <div style={{ color: "#555", fontSize: "12px", fontFamily: "monospace" }}>{tip.time}</div>
+                <div style={{ color: "#888", fontSize: "12px", fontFamily: "monospace", background: BG3, borderRadius: "6px", padding: "3px 8px" }}>{tip.time}</div>
               ) : (
-                <div style={{ color: "#333", fontSize: "11px", fontFamily: "monospace" }}>VS</div>
+                <div style={{ color: "#333", fontSize: "11px", fontFamily: "monospace" }}>-</div>
               )}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0, justifyContent: "flex-end" }}>
-              <span style={{ color: "#fff", fontSize: "13px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right" }}>{away}</span>
-              <ClubLogo name={away} size={36} />
-            </div>
+            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right" }}>{away}</span>
           </div>
         ) : (
           <div style={{ color: "#fff", fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{tip.match}</div>
@@ -1054,15 +1035,6 @@ export default function App() {
             </div>
           )}
           {filterSport === "nba" && (
-            loading ? <LoadingSpinner /> : filtered.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
-              </div>
-            )
-          )}
-          {filterSport === "f1" && (
             loading ? <LoadingSpinner /> : filtered.length === 0 ? (
               <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
             ) : (
