@@ -55,17 +55,17 @@ const TENNIS_SLAMS = [
 ];
 const ALL_TENNIS = [...TENNIS_TOURS, ...TENNIS_SLAMS];
 const LEAGUE_LOGOS = {
-  premier_league: "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg",
-  ligue1: "https://upload.wikimedia.org/wikipedia/fr/thumb/d/d7/Logo_Ligue_1_2024.svg/200px-Logo_Ligue_1_2024.svg.png",
-  laliga: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/LaLiga_EA_Sports_2023_Vertical.svg/200px-LaLiga_EA_Sports_2023_Vertical.svg.png",
-  bundesliga: "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Bundesliga_logo_%282017%29.svg/200px-Bundesliga_logo_%282017%29.svg.png",
-  serie_a: "https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Serie_A_logo_%282019%29.svg/200px-Serie_A_logo_%282019%29.svg.png",
-  saudi: "https://upload.wikimedia.org/wikipedia/en/thumb/4/4a/Saudi_Pro_League_Logo.svg/200px-Saudi_Pro_League_Logo.svg.png",
-  liga_portugal: "https://upload.wikimedia.org/wikipedia/en/thumb/1/13/Liga_Portugal_logo.svg/200px-Liga_Portugal_logo.svg.png",
-  super_lig: "https://upload.wikimedia.org/wikipedia/en/thumb/b/b1/S%C3%BCper_Lig_logo.svg/200px-S%C3%BCper_Lig_logo.svg.png",
-  eredivisie: "https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/Eredivisie_nieuw_logo_2017-.svg/200px-Eredivisie_nieuw_logo_2017-.svg.png",
-  champions_league: "https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League_logo_2.svg/200px-UEFA_Champions_League_logo_2.svg.png",
-  world_cup: "https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/FIFA_World_Cup_2026_logo.svg/200px-FIFA_World_Cup_2026_logo.svg.png",
+  premier_league: "https://crests.football-data.org/PL.png",
+  ligue1: "https://crests.football-data.org/FL1.png",
+  laliga: "https://crests.football-data.org/PD.png",
+  bundesliga: "https://crests.football-data.org/BL1.png",
+  serie_a: "https://crests.football-data.org/SA.png",
+  saudi: "https://media.api-sports.io/football/leagues/307.png",
+  liga_portugal: "https://crests.football-data.org/PPL.png",
+  super_lig: "https://media.api-sports.io/football/leagues/203.png",
+  eredivisie: "https://crests.football-data.org/DED.png",
+  champions_league: "https://crests.football-data.org/CL.png",
+  world_cup: "https://media.api-sports.io/football/leagues/1.png",
 };
 
 const CLUB_LOGOS = {
