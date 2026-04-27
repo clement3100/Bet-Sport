@@ -54,7 +54,197 @@ const TENNIS_SLAMS = [
   { id: "us_open", label: "US Open", flag: "🇺🇸", color: "#42a5f5" },
 ];
 const ALL_TENNIS = [...TENNIS_TOURS, ...TENNIS_SLAMS];
-const BET_TYPES = ["1", "N", "2", "1/N", "1/2", "N/2", "Plus de 2.5", "Moins de 2.5", "BTTS Oui", "BTTS Non", "Personnalisé"];
+const LEAGUE_LOGOS = {
+  premier_league: "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg",
+  ligue1: "https://upload.wikimedia.org/wikipedia/fr/thumb/d/d7/Logo_Ligue_1_2024.svg/200px-Logo_Ligue_1_2024.svg.png",
+  laliga: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/LaLiga_EA_Sports_2023_Vertical.svg/200px-LaLiga_EA_Sports_2023_Vertical.svg.png",
+  bundesliga: "https://upload.wikimedia.org/wikipedia/en/thumb/d/df/Bundesliga_logo_%282017%29.svg/200px-Bundesliga_logo_%282017%29.svg.png",
+  serie_a: "https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Serie_A_logo_%282019%29.svg/200px-Serie_A_logo_%282019%29.svg.png",
+  saudi: "https://upload.wikimedia.org/wikipedia/en/thumb/4/4a/Saudi_Pro_League_Logo.svg/200px-Saudi_Pro_League_Logo.svg.png",
+  liga_portugal: "https://upload.wikimedia.org/wikipedia/en/thumb/1/13/Liga_Portugal_logo.svg/200px-Liga_Portugal_logo.svg.png",
+  super_lig: "https://upload.wikimedia.org/wikipedia/en/thumb/b/b1/S%C3%BCper_Lig_logo.svg/200px-S%C3%BCper_Lig_logo.svg.png",
+  eredivisie: "https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/Eredivisie_nieuw_logo_2017-.svg/200px-Eredivisie_nieuw_logo_2017-.svg.png",
+  champions_league: "https://upload.wikimedia.org/wikipedia/en/thumb/b/bf/UEFA_Champions_League_logo_2.svg/200px-UEFA_Champions_League_logo_2.svg.png",
+  world_cup: "https://upload.wikimedia.org/wikipedia/en/thumb/8/8a/FIFA_World_Cup_2026_logo.svg/200px-FIFA_World_Cup_2026_logo.svg.png",
+};
+
+const CLUB_LOGOS = {
+  // Ligue 1
+  "psg": "https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg",
+  "paris saint-germain": "https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg",
+  "paris sg": "https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg",
+  "marseille": "https://upload.wikimedia.org/wikipedia/en/d/d8/Olympique_Marseille_logo.svg",
+  "om": "https://upload.wikimedia.org/wikipedia/en/d/d8/Olympique_Marseille_logo.svg",
+  "lyon": "https://upload.wikimedia.org/wikipedia/en/e/e2/Olympique_Lyonnais_%28emblem%29.svg",
+  "ol": "https://upload.wikimedia.org/wikipedia/en/e/e2/Olympique_Lyonnais_%28emblem%29.svg",
+  "monaco": "https://upload.wikimedia.org/wikipedia/en/e/ea/AS_Monaco_FC.svg",
+  "as monaco": "https://upload.wikimedia.org/wikipedia/en/e/ea/AS_Monaco_FC.svg",
+  "lille": "https://upload.wikimedia.org/wikipedia/en/2/24/LOSC_Lille_logo.svg",
+  "losc": "https://upload.wikimedia.org/wikipedia/en/2/24/LOSC_Lille_logo.svg",
+  "rennes": "https://upload.wikimedia.org/wikipedia/en/4/4d/Stade_Rennais_FC.svg",
+  "stade rennais": "https://upload.wikimedia.org/wikipedia/en/4/4d/Stade_Rennais_FC.svg",
+  "nantes": "https://upload.wikimedia.org/wikipedia/en/5/5e/FC_Nantes_logo.svg",
+  "fc nantes": "https://upload.wikimedia.org/wikipedia/en/5/5e/FC_Nantes_logo.svg",
+  "nice": "https://upload.wikimedia.org/wikipedia/en/5/50/OGC_Nice_logo.svg",
+  "ogc nice": "https://upload.wikimedia.org/wikipedia/en/5/50/OGC_Nice_logo.svg",
+  "lens": "https://upload.wikimedia.org/wikipedia/en/4/42/RC_Lens_logo.svg",
+  "rc lens": "https://upload.wikimedia.org/wikipedia/en/4/42/RC_Lens_logo.svg",
+  "strasbourg": "https://upload.wikimedia.org/wikipedia/en/9/9c/RC_Strasbourg_logo.svg",
+  "montpellier": "https://upload.wikimedia.org/wikipedia/en/0/0c/Montpellier_HSC_logo.svg",
+  "toulouse": "https://upload.wikimedia.org/wikipedia/en/9/9b/Toulouse_FC_logo.svg",
+  "reims": "https://upload.wikimedia.org/wikipedia/en/2/2b/Stade_de_Reims_logo.svg",
+  "stade de reims": "https://upload.wikimedia.org/wikipedia/en/2/2b/Stade_de_Reims_logo.svg",
+  "brest": "https://upload.wikimedia.org/wikipedia/en/5/5c/Stade_Brestois_29_logo.svg",
+  "stade brestois": "https://upload.wikimedia.org/wikipedia/en/5/5c/Stade_Brestois_29_logo.svg",
+  "le havre": "https://upload.wikimedia.org/wikipedia/en/6/66/HAC_logo.svg",
+  "saint-etienne": "https://upload.wikimedia.org/wikipedia/en/d/db/AS_Saint-%C3%89tienne.svg",
+  "asse": "https://upload.wikimedia.org/wikipedia/en/d/db/AS_Saint-%C3%89tienne.svg",
+  "angers": "https://upload.wikimedia.org/wikipedia/en/8/8c/Angers_SCO.svg",
+  "auxerre": "https://upload.wikimedia.org/wikipedia/en/0/0e/AJ_Auxerre_logo.svg",
+  // Premier League
+  "arsenal": "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg",
+  "chelsea": "https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg",
+  "liverpool": "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg",
+  "manchester city": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
+  "man city": "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg",
+  "manchester united": "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
+  "man utd": "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
+  "man united": "https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg",
+  "tottenham": "https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg",
+  "spurs": "https://upload.wikimedia.org/wikipedia/en/b/b4/Tottenham_Hotspur.svg",
+  "newcastle": "https://upload.wikimedia.org/wikipedia/en/5/56/Newcastle_United_Logo.svg",
+  "aston villa": "https://upload.wikimedia.org/wikipedia/en/f/f9/Aston_Villa_FC_crest_%282016%29.svg",
+  "west ham": "https://upload.wikimedia.org/wikipedia/en/c/c2/West_Ham_United_FC_logo.svg",
+  "everton": "https://upload.wikimedia.org/wikipedia/en/7/7c/Everton_FC_logo.svg",
+  "brighton": "https://upload.wikimedia.org/wikipedia/en/f/fd/Brighton_%26_Hove_Albion_logo.svg",
+  "brentford": "https://upload.wikimedia.org/wikipedia/en/2/2a/Brentford_FC_crest.svg",
+  "fulham": "https://upload.wikimedia.org/wikipedia/en/e/eb/Fulham_FC_%28shield%29.svg",
+  "wolves": "https://upload.wikimedia.org/wikipedia/en/f/fc/Wolverhampton_Wanderers.svg",
+  "wolverhampton": "https://upload.wikimedia.org/wikipedia/en/f/fc/Wolverhampton_Wanderers.svg",
+  "crystal palace": "https://upload.wikimedia.org/wikipedia/en/0/0c/Crystal_Palace_FC_logo_%282022%29.svg",
+  "nottingham forest": "https://upload.wikimedia.org/wikipedia/en/e/e5/Nottingham_Forest_F.C._logo.svg",
+  "leicester": "https://upload.wikimedia.org/wikipedia/en/2/2d/Leicester_City_crest.svg",
+  // LaLiga
+  "real madrid": "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg",
+  "barcelona": "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
+  "fc barcelona": "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg",
+  "atletico madrid": "https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg",
+  "atletico": "https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2017_logo.svg",
+  "sevilla": "https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg",
+  "real betis": "https://upload.wikimedia.org/wikipedia/en/1/13/Real_betis_logo.svg",
+  "villarreal": "https://upload.wikimedia.org/wikipedia/en/b/b9/Villarreal_CF_logo-en.svg",
+  "real sociedad": "https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg",
+  "athletic bilbao": "https://upload.wikimedia.org/wikipedia/en/9/98/Club_Athletic_de_Bilbao_logo.svg",
+  "valencia": "https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg",
+  "osasuna": "https://upload.wikimedia.org/wikipedia/en/8/88/C.A._Osasuna_logo.svg",
+  "girona": "https://upload.wikimedia.org/wikipedia/en/6/6e/Girona_FC_logo.svg",
+  "celta vigo": "https://upload.wikimedia.org/wikipedia/en/1/12/Celta_de_Vigo_logo.svg",
+  "getafe": "https://upload.wikimedia.org/wikipedia/en/3/35/Getafe_CF.svg",
+  "rayo vallecano": "https://upload.wikimedia.org/wikipedia/en/d/d4/Rayo_Vallecano_logo.svg",
+  "mallorca": "https://upload.wikimedia.org/wikipedia/en/b/b9/RCD_Mallorca_logo.svg",
+  "las palmas": "https://upload.wikimedia.org/wikipedia/en/7/79/UD_Las_Palmas_logo.svg",
+  "alaves": "https://upload.wikimedia.org/wikipedia/en/b/b9/Deportivo_Alav%C3%A9s_logo.svg",
+  // Bundesliga
+  "bayern munich": "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282002%E2%80%932017%29.svg",
+  "bayern": "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282002%E2%80%932017%29.svg",
+  "borussia dortmund": "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg",
+  "dortmund": "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg",
+  "bvb": "https://upload.wikimedia.org/wikipedia/commons/6/67/Borussia_Dortmund_logo.svg",
+  "rb leipzig": "https://upload.wikimedia.org/wikipedia/en/0/04/RB_Leipzig_2014_logo.svg",
+  "leipzig": "https://upload.wikimedia.org/wikipedia/en/0/04/RB_Leipzig_2014_logo.svg",
+  "bayer leverkusen": "https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg",
+  "leverkusen": "https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg",
+  "eintracht frankfurt": "https://upload.wikimedia.org/wikipedia/commons/0/04/Eintracht_Frankfurt_Logo.svg",
+  "frankfurt": "https://upload.wikimedia.org/wikipedia/commons/0/04/Eintracht_Frankfurt_Logo.svg",
+  "borussia monchengladbach": "https://upload.wikimedia.org/wikipedia/commons/8/81/Borussia_M%C3%B6nchengladbach_logo.svg",
+  "gladbach": "https://upload.wikimedia.org/wikipedia/commons/8/81/Borussia_M%C3%B6nchengladbach_logo.svg",
+  "wolfsburg": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Logo-VfL-Wolfsburg.svg",
+  "schalke": "https://upload.wikimedia.org/wikipedia/commons/6/6d/FC_Schalke_04_Logo.svg",
+  "stuttgart": "https://upload.wikimedia.org/wikipedia/commons/e/eb/VfB_Stuttgart_1893_Logo.svg",
+  "vfb stuttgart": "https://upload.wikimedia.org/wikipedia/commons/e/eb/VfB_Stuttgart_1893_Logo.svg",
+  "freiburg": "https://upload.wikimedia.org/wikipedia/de/f/f7/SC_Freiburg_Logo.svg",
+  "union berlin": "https://upload.wikimedia.org/wikipedia/commons/4/44/1._FC_Union_Berlin_Logo.svg",
+  "hoffenheim": "https://upload.wikimedia.org/wikipedia/commons/6/64/TSG_Logo-Standard_Bundesliga.svg",
+  "mainz": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_Mainz_05.svg",
+  "augsburg": "https://upload.wikimedia.org/wikipedia/de/b/b5/FC_Augsburg_logo.svg",
+  "werder bremen": "https://upload.wikimedia.org/wikipedia/commons/b/be/SV-Werder-Bremen-Logo.svg",
+  "bremen": "https://upload.wikimedia.org/wikipedia/commons/b/be/SV-Werder-Bremen-Logo.svg",
+  // Serie A
+  "juventus": "https://upload.wikimedia.org/wikipedia/commons/1/15/Juventus_FC_2017_icon_%28black%29.svg",
+  "juve": "https://upload.wikimedia.org/wikipedia/commons/1/15/Juventus_FC_2017_icon_%28black%29.svg",
+  "inter milan": "https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg",
+  "inter": "https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg",
+  "ac milan": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg",
+  "milan": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Logo_of_AC_Milan.svg",
+  "as roma": "https://upload.wikimedia.org/wikipedia/en/f/f7/AS_Roma_logo_%282017%29.svg",
+  "roma": "https://upload.wikimedia.org/wikipedia/en/f/f7/AS_Roma_logo_%282017%29.svg",
+  "napoli": "https://upload.wikimedia.org/wikipedia/commons/2/2d/SSC_Napoli.svg",
+  "ssc napoli": "https://upload.wikimedia.org/wikipedia/commons/2/2d/SSC_Napoli.svg",
+  "lazio": "https://upload.wikimedia.org/wikipedia/en/7/71/SS_Lazio_Badge.svg",
+  "ss lazio": "https://upload.wikimedia.org/wikipedia/en/7/71/SS_Lazio_Badge.svg",
+  "atalanta": "https://upload.wikimedia.org/wikipedia/en/6/66/Atalanta_BC_logo.svg",
+  "fiorentina": "https://upload.wikimedia.org/wikipedia/commons/a/a4/ACF_Fiorentina.svg",
+  "torino": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Torino_FC_Logo.svg",
+  "udinese": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Udinese_Calcio_logo_%282019%29.svg",
+  "bologna": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Bologna_FC_1909_logo.svg",
+  "sampdoria": "https://upload.wikimedia.org/wikipedia/en/8/84/UC_Sampdoria_logo.svg",
+  "sassuolo": "https://upload.wikimedia.org/wikipedia/en/a/a4/US_Sassuolo_Calcio_logo.svg",
+  "empoli": "https://upload.wikimedia.org/wikipedia/en/c/cd/Empoli_FC_logo.svg",
+  "monza": "https://upload.wikimedia.org/wikipedia/en/5/54/AC_Monza_logo.svg",
+  "genoa": "https://upload.wikimedia.org/wikipedia/en/7/7c/Genoa_CFC_logo.svg",
+  "cagliari": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Cagliari_Calcio_logo.svg",
+  // Champions League / International
+  "porto": "https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg",
+  "fc porto": "https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg",
+  "benfica": "https://upload.wikimedia.org/wikipedia/en/f/f2/SL_Benfica_logo.svg",
+  "sl benfica": "https://upload.wikimedia.org/wikipedia/en/f/f2/SL_Benfica_logo.svg",
+  "sporting cp": "https://upload.wikimedia.org/wikipedia/en/4/4e/Sporting_CP_logo.svg",
+  "sporting": "https://upload.wikimedia.org/wikipedia/en/4/4e/Sporting_CP_logo.svg",
+  "ajax": "https://upload.wikimedia.org/wikipedia/en/7/79/Ajax_Amsterdam.svg",
+  "psv": "https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven_logo.svg",
+  "psv eindhoven": "https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven_logo.svg",
+  "celtic": "https://upload.wikimedia.org/wikipedia/en/3/35/Celtic_FC_crest.svg",
+  "rangers": "https://upload.wikimedia.org/wikipedia/en/f/f0/Rangers_FC.svg",
+  "anderlecht": "https://upload.wikimedia.org/wikipedia/en/8/8c/RSC_Anderlecht_logo.svg",
+  "galatasaray": "https://upload.wikimedia.org/wikipedia/en/5/52/Galatasaray_SK.svg",
+  "fenerbahce": "https://upload.wikimedia.org/wikipedia/en/4/41/Fenerbah%C3%A7e_SK.svg",
+  "besiktas": "https://upload.wikimedia.org/wikipedia/en/9/96/Be%C5%9Fikta%C5%9F_JK_logo.svg",
+  "shakhtar donetsk": "https://upload.wikimedia.org/wikipedia/en/a/ab/FC_Shakhtar_Donetsk.svg",
+  "dynamo kyiv": "https://upload.wikimedia.org/wikipedia/en/4/44/FC_Dynamo_Kyiv_logo.svg",
+  "red bull salzburg": "https://upload.wikimedia.org/wikipedia/en/4/40/FC_Red_Bull_Salzburg_logo.svg",
+  "salzburg": "https://upload.wikimedia.org/wikipedia/en/4/40/FC_Red_Bull_Salzburg_logo.svg",
+};
+
+function getClubLogo(name) {
+  if (!name) return null;
+  const key = name.toLowerCase().trim();
+  return CLUB_LOGOS[key] || null;
+}
+
+function ClubLogo({ name, size = 32 }) {
+  const logo = getClubLogo(name);
+  if (logo) {
+    return <img src={logo} alt={name} style={{ width: size, height: size, objectFit: "contain" }} onError={e => e.target.style.display = "none"} />;
+  }
+  const initials = name ? name.substring(0, 2).toUpperCase() : "?";
+  return (
+    <div style={{ width: size, height: size, borderRadius: "50%", background: BG3, border: "1px solid #1e1e28", display: "flex", alignItems: "center", justifyContent: "center", fontSize: size * 0.35, color: GOLD, fontWeight: "700", fontFamily: "monospace", flexShrink: 0 }}>
+      {initials}
+    </div>
+  );
+}
+
+function parseTeams(matchStr) {
+  if (!matchStr) return { home: "", away: "" };
+  const separators = [" - ", " vs ", " VS ", " v ", " V "];
+  for (const sep of separators) {
+    if (matchStr.includes(sep)) {
+      const parts = matchStr.split(sep);
+      return { home: parts[0].trim(), away: parts.slice(1).join(sep).trim() };
+    }
+  }
+  return { home: matchStr, away: "" };
+}
 
 const CONFIDENCE_CONFIG = {
   1: { color: "#444455", label: "Très risqué" },
@@ -111,16 +301,26 @@ function StarRating({ value, onChange }) {
 function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
   const sport = SPORTS.find(s => s.id === tip.sport) || SPORTS[0];
   const conf = CONFIDENCE_CONFIG[tip.confidence];
+  const league = ALL_LEAGUES.find(l => l.id === tip.league);
+  const { home, away } = parseTeams(tip.match);
+  const hasTeams = home && away;
+
   return (
     <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "14px", overflow: "hidden" }}>
       <div style={{ height: "2px", background: tip.result === "win" ? "linear-gradient(90deg, #66bb6a, #43a047)" : tip.result === "loss" ? "linear-gradient(90deg, #ef5350, #e53935)" : `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD})` }} />
-      <div style={{ padding: "16px 18px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "10px" }}>
+      <div style={{ padding: "14px 16px" }}>
+
+        {/* Header: sport + league + date + delete */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <span style={{ fontSize: "22px" }}>{sport.icon}</span>
+            {league && LEAGUE_LOGOS[league.id] ? (
+              <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "24px", height: "24px", objectFit: "contain" }} onError={e => e.target.style.display = "none"} />
+            ) : (
+              <span style={{ fontSize: "18px" }}>{sport.icon}</span>
+            )}
             <div>
-              <div style={{ color: sport.color, fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px" }}>{sport.label.toUpperCase()}</div>
-              <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace" }}>{tip.date}</div>
+              <div style={{ color: sport.color, fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px" }}>{league ? league.label.toUpperCase() : sport.label.toUpperCase()}</div>
+              <div style={{ color: "#444", fontSize: "10px", fontFamily: "monospace" }}>{tip.date}</div>
             </div>
           </div>
           {isAdmin && (
@@ -129,18 +329,42 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
               onMouseLeave={e => e.target.style.color = "#222"}>✕</button>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-          <div style={{ color: "#fff", fontSize: "16px", fontWeight: "700" }}>{tip.match}</div>
-          {tip.result && tip.score && (
-            <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "4px 12px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "14px", fontFamily: "monospace", fontWeight: "700", flexShrink: 0, marginLeft: "8px" }}>{tip.score}</div>
-          )}
-        </div>
+
+        {/* Match: logo - nom - heure/score - nom - logo */}
+        {hasTeams ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", gap: "8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
+              <ClubLogo name={home} size={36} />
+              <span style={{ color: "#fff", fontSize: "13px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
+            </div>
+            <div style={{ flexShrink: 0, textAlign: "center", minWidth: "52px" }}>
+              {tip.result && tip.score ? (
+                <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "14px", fontFamily: "monospace", fontWeight: "900" }}>{tip.score}</div>
+              ) : tip.time ? (
+                <div style={{ color: "#555", fontSize: "12px", fontFamily: "monospace" }}>{tip.time}</div>
+              ) : (
+                <div style={{ color: "#333", fontSize: "11px", fontFamily: "monospace" }}>VS</div>
+              )}
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0, justifyContent: "flex-end" }}>
+              <span style={{ color: "#fff", fontSize: "13px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right" }}>{away}</span>
+              <ClubLogo name={away} size={36} />
+            </div>
+          </div>
+        ) : (
+          <div style={{ color: "#fff", fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{tip.match}</div>
+        )}
+
+        {/* Pari + cote */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
           <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{tip.bet}</div>
           {tip.odds && <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "12px", fontFamily: "monospace" }}>{tip.odds}</div>}
         </div>
+
         {tip.note && <div style={{ color: "#444", fontSize: "12px", fontStyle: "italic", marginBottom: "10px" }}>{tip.note}</div>}
         <GoldDivider />
+
+        {/* Étoiles + WIN/LOSS */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
           <div style={{ display: "flex", gap: "4px" }}>
             {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= tip.confidence ? conf?.color : "#1e1e28", fontSize: "14px" }}>★</span>)}
@@ -152,12 +376,8 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
                 <button onClick={() => onToggleResult(tip.id, "loss")} style={{ background: tip.result === "loss" ? "#ef535022" : "none", border: `1px solid ${tip.result === "loss" ? "#ef5350" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "loss" ? "#ef5350" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>LOSS</button>
               </div>
               {tip.result && (
-                <input
-                  value={tip.score || ""}
-                  onChange={e => onUpdateScore(tip.id, e.target.value)}
-                  placeholder="Score ex: 2 - 1"
-                  style={{ background: BG3, border: "1px solid #1e1e28", borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "11px", fontFamily: "monospace", width: "120px", outline: "none", textAlign: "center" }}
-                />
+                <input value={tip.score || ""} onChange={e => onUpdateScore(tip.id, e.target.value)} placeholder="Score ex: 2 - 1"
+                  style={{ background: BG3, border: "1px solid #1e1e28", borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "11px", fontFamily: "monospace", width: "120px", outline: "none", textAlign: "center" }} />
               )}
             </div>
           ) : (
@@ -425,7 +645,7 @@ export default function App() {
 
   const [form, setForm] = useState({
     sport: "football", match: "", bet: "1",
-    customBet: "", odds: "", confidence: 0, note: "",
+    customBet: "", odds: "", confidence: 0, note: "", time: "",
     league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
   });
 
@@ -492,11 +712,11 @@ export default function App() {
     const { data, error } = await supabase.from("tips").insert([{
       sport: form.sport, league: form.league, match: form.match,
       bet: betLabel, odds: form.odds, confidence: form.confidence,
-      note: form.note, date: form.date, result: null,
+      note: form.note, date: form.date, time: form.time, result: null,
     }]).select();
     if (!error && data) {
       setTips([data[0], ...tips]);
-      setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
+      setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", time: "", league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
       setView("list");
     }
     setSaving(false);
@@ -631,7 +851,11 @@ export default function App() {
                         style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
                         onMouseEnter={e => { e.currentTarget.style.background = league.color + "22"; e.currentTarget.style.borderColor = league.color + "44"; }}
                         onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
-                        <span style={{ fontSize: "24px" }}>{league.flag}</span>
+                        {LEAGUE_LOGOS[league.id] ? (
+                          <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "32px", height: "32px", objectFit: "contain" }} onError={e => e.target.style.display = "none"} />
+                        ) : (
+                          <span style={{ fontSize: "24px" }}>{league.flag}</span>
+                        )}
                         <span style={{ color: "#ccc", fontSize: "13px", fontWeight: "600", flex: 1, textAlign: "left" }}>{league.label}</span>
                         <span style={{ color: "#333", fontSize: "18px" }}>›</span>
                       </button>
@@ -643,7 +867,11 @@ export default function App() {
                 <div>
                   <button onClick={() => setActiveLeague(null)} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                    <span style={{ fontSize: "24px" }}>{ALL_LEAGUES.find(l => l.id === activeLeague)?.flag}</span>
+                    {LEAGUE_LOGOS[activeLeague] ? (
+                      <img src={LEAGUE_LOGOS[activeLeague]} alt="" style={{ width: "32px", height: "32px", objectFit: "contain" }} />
+                    ) : (
+                      <span style={{ fontSize: "24px" }}>{ALL_LEAGUES.find(l => l.id === activeLeague)?.flag}</span>
+                    )}
                     <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700" }}>{ALL_LEAGUES.find(l => l.id === activeLeague)?.label}</span>
                   </div>
                   {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
@@ -875,7 +1103,11 @@ export default function App() {
                 {LEAGUES_NATIONAL.map(league => (
                   <button key={league.id} onClick={() => setForm({ ...form, league: league.id })}
                     style={{ background: form.league === league.id ? `${league.color}22` : BG3, border: `1px solid ${form.league === league.id ? league.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span style={{ fontSize: "18px" }}>{league.flag}</span>
+                    {LEAGUE_LOGOS[league.id] ? (
+                      <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+                    ) : (
+                      <span style={{ fontSize: "18px" }}>{league.flag}</span>
+                    )}
                     <span style={{ color: form.league === league.id ? "#fff" : "#555", fontSize: "12px", fontWeight: "600" }}>{league.label}</span>
                   </button>
                 ))}
@@ -888,7 +1120,11 @@ export default function App() {
                 {LEAGUES_INTERNATIONAL.map(league => (
                   <button key={league.id} onClick={() => setForm({ ...form, league: league.id })}
                     style={{ background: form.league === league.id ? `${league.color}22` : BG3, border: `1px solid ${form.league === league.id ? league.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span style={{ fontSize: "18px" }}>{league.flag}</span>
+                    {LEAGUE_LOGOS[league.id] ? (
+                      <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "24px", height: "24px", objectFit: "contain" }} />
+                    ) : (
+                      <span style={{ fontSize: "18px" }}>{league.flag}</span>
+                    )}
                     <span style={{ color: form.league === league.id ? "#fff" : "#555", fontSize: "12px", fontWeight: "600" }}>{league.label}</span>
                   </button>
                 ))}
@@ -928,7 +1164,11 @@ export default function App() {
           )}
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>MATCH</div>
-            <input value={form.match} onChange={e => setForm({ ...form, match: e.target.value })} placeholder="Ex: PSG vs Real Madrid" style={inputStyle} />
+            <input value={form.match} onChange={e => setForm({ ...form, match: e.target.value })} placeholder="Ex: PSG - Real Madrid" style={inputStyle} />
+          </div>
+          <div style={{ marginBottom: "16px" }}>
+            <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>HEURE DU MATCH</div>
+            <input value={form.time} onChange={e => setForm({ ...form, time: e.target.value })} placeholder="Ex: 21:00" style={inputStyle} />
           </div>
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>TYPE DE PARI</div>
