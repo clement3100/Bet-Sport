@@ -1,13 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
 
-// ============================================================
-// CONFIG — remplace ces 2 valeurs par les tiennes
-// ============================================================
 const SUPABASE_URL = "https://mamiervnrsnpnkusgvgu.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_r95oTdvQUGpXJJwQKgKU6Q_HAX9aCGl";
-// ============================================================
-
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const GOLD = "#f0b429";
@@ -53,19 +48,8 @@ const TENNIS_SLAMS = [
   { id: "us_open", label: "US Open", flag: "🇺🇸", color: "#42a5f5" },
 ];
 const ALL_TENNIS = [...TENNIS_TOURS, ...TENNIS_SLAMS];
-const LEAGUE_LOGOS = {};
 
-function parseTeams(matchStr) {
-  if (!matchStr) return { home: "", away: "" };
-  const separators = [" - ", " vs ", " VS ", " v ", " V "];
-  for (const sep of separators) {
-    if (matchStr.includes(sep)) {
-      const parts = matchStr.split(sep);
-      return { home: parts[0].trim(), away: parts.slice(1).join(sep).trim() };
-    }
-  }
-  return { home: matchStr, away: "" };
-}
+const BET_TYPES = ["1", "N", "2", "1/N", "1/2", "N/2", "Plus de 2.5", "Moins de 2.5", "BTTS Oui", "BTTS Non", "Personnalisé"];
 
 const CONFIDENCE_CONFIG = {
   1: { color: "#444455", label: "Très risqué" },
@@ -80,6 +64,18 @@ const inputStyle = {
   borderRadius: "10px", padding: "13px 16px", color: "#fff",
   fontSize: "15px", outline: "none", boxSizing: "border-box", fontFamily: "inherit",
 };
+
+function parseTeams(matchStr) {
+  if (!matchStr) return { home: "", away: "" };
+  const separators = [" - ", " vs ", " VS "];
+  for (const sep of separators) {
+    if (matchStr.includes(sep)) {
+      const parts = matchStr.split(sep);
+      return { home: parts[0].trim(), away: parts.slice(1).join(sep).trim() };
+    }
+  }
+  return { home: matchStr, away: "" };
+}
 
 function GoldDivider() {
   return (
@@ -119,6 +115,15 @@ function StarRating({ value, onChange }) {
   );
 }
 
+function LoadingSpinner() {
+  return (
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "60px 0" }}>
+      <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: `3px solid #1a1a22`, borderTopColor: GOLD, animation: "spin 0.8s linear infinite" }} />
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+    </div>
+  );
+}
+
 function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
   const sport = SPORTS.find(s => s.id === tip.sport) || SPORTS[0];
   const conf = CONFIDENCE_CONFIG[tip.confidence] || CONFIDENCE_CONFIG[3];
@@ -130,15 +135,9 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
     <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "14px", overflow: "hidden" }}>
       <div style={{ height: "2px", background: tip.result === "win" ? "linear-gradient(90deg, #66bb6a, #43a047)" : tip.result === "loss" ? "linear-gradient(90deg, #ef5350, #e53935)" : `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD})` }} />
       <div style={{ padding: "14px 16px" }}>
-
-        {/* Header: sport + league + date + delete */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            {league && LEAGUE_LOGOS[league.id] ? (
-              <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "24px", height: "24px", objectFit: "contain" }} onError={e => e.target.style.display = "none"} />
-            ) : (
-              <span style={{ fontSize: "18px" }}>{sport.icon}</span>
-            )}
+            <span style={{ fontSize: "18px" }}>{sport.icon}</span>
             <div>
               <div style={{ color: sport.color, fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px" }}>{league ? league.label.toUpperCase() : sport.label.toUpperCase()}</div>
               <div style={{ color: "#444", fontSize: "10px", fontFamily: "monospace" }}>{tip.date}</div>
@@ -151,7 +150,6 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
           )}
         </div>
 
-        {/* Match: nom - heure/score - nom */}
         {hasTeams ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", gap: "8px" }}>
             <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
@@ -170,7 +168,6 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
           <div style={{ color: "#fff", fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{tip.match}</div>
         )}
 
-        {/* Pari + cote */}
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
           <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{tip.bet}</div>
           {tip.odds && <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "12px", fontFamily: "monospace" }}>{tip.odds}</div>}
@@ -179,10 +176,9 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
         {tip.note && <div style={{ color: "#444", fontSize: "12px", fontStyle: "italic", marginBottom: "10px" }}>{tip.note}</div>}
         <GoldDivider />
 
-        {/* Étoiles + WIN/LOSS */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
           <div style={{ display: "flex", gap: "4px" }}>
-            {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= tip.confidence ? conf?.color : "#1e1e28", fontSize: "14px" }}>★</span>)}
+            {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= tip.confidence ? conf.color : "#1e1e28", fontSize: "14px" }}>★</span>)}
           </div>
           {isAdmin ? (
             <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px" }}>
@@ -196,7 +192,11 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
               )}
             </div>
           ) : (
-            tip.result && <div style={{ background: tip.result === "win" ? "#66bb6a18" : "#ef535018", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "4px 12px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", letterSpacing: "1px" }}>{tip.result === "win" ? "✓ WIN" : "✗ LOSS"}</div>
+            tip.result && (
+              <div style={{ background: tip.result === "win" ? "#66bb6a18" : "#ef535018", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "4px 12px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", letterSpacing: "1px" }}>
+                {tip.result === "win" ? "✓ WIN" : "✗ LOSS"}
+              </div>
+            )
           )}
         </div>
       </div>
@@ -225,21 +225,11 @@ function MiniBar({ wins, losses, total, color }) {
   );
 }
 
-function LoadingSpinner() {
-  return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "60px 0" }}>
-      <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: `3px solid #1a1a22`, borderTopColor: GOLD, animation: "spin 0.8s linear infinite" }} />
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-    </div>
-  );
-}
-
 function HomeView({ tips, onLogoTap, loading }) {
   const total = tips.length;
   const wins = tips.filter(t => t.result === "win").length;
   const losses = tips.filter(t => t.result === "loss").length;
   const rate = (wins + losses) > 0 ? Math.round((wins / (wins + losses)) * 100) : null;
-
   return (
     <div style={{ minHeight: "100vh", background: BG }}>
       <div style={{ padding: "40px 28px 36px", background: `linear-gradient(180deg, #0e0c08 0%, ${BG} 100%)`, position: "relative", overflow: "hidden" }}>
@@ -286,7 +276,7 @@ function HomeView({ tips, onLogoTap, loading }) {
             Bienvenue sur <span style={{ background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD_DARK})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Bet Sport</span>
           </div>
           <p style={{ color: "#666", fontSize: "13px", lineHeight: "1.75", margin: 0 }}>
-            Une équipe de pronostiqueurs professionnels partage ses meilleurs pronostics <span style={{ color: GOLD }}>gratuitement</span>.<br/>Analyses rigoureuses, conseils fiables et résultats transparents.
+            Une équipe de pronostiqueurs professionnels partage ses meilleurs pronostics <span style={{ color: GOLD }}>gratuitement</span>.<br />Analyses rigoureuses, conseils fiables et résultats transparents.
           </p>
         </div>
       </div>
@@ -313,12 +303,6 @@ function StatsView({ tips, loading }) {
     const sl = st.filter(t => t.result === "loss").length;
     return { ...s, total: st.length, wins: sw, losses: sl, rate: (sw+sl) > 0 ? Math.round(sw/(sw+sl)*100) : null };
   });
-  const byConf = [5,4,3,2,1].map(c => {
-    const ct = tips.filter(t => t.confidence === c);
-    const cw = ct.filter(t => t.result === "win").length;
-    const cl = ct.filter(t => t.result === "loss").length;
-    return { c, total: ct.length, wins: cw, losses: cl, rate: (cw+cl)>0 ? Math.round(cw/(cw+cl)*100) : null };
-  }).filter(c => c.total > 0);
   const last5 = tips.filter(t => t.result).slice(0, 5);
   const pending = total - wins - losses;
 
@@ -341,7 +325,7 @@ function StatsView({ tips, loading }) {
           <RadialProgress value={rate ?? 0} size={90} stroke={8} color={rate >= 60 ? "#66bb6a" : rate >= 40 ? GOLD : "#ef5350"} />
           <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", textAlign: "center" }}>
             <div style={{ color: "#fff", fontFamily: "monospace", fontWeight: "900", fontSize: "16px" }}>{rate ?? "—"}{rate !== null ? "%" : ""}</div>
-            <div style={{ color: "#333", fontSize: "8px", fontFamily: "monospace", letterSpacing: "1px" }}>WIN</div>
+            <div style={{ color: "#333", fontSize: "8px", fontFamily: "monospace" }}>WIN</div>
           </div>
         </div>
         <div style={{ flex: 1 }}>
@@ -364,12 +348,12 @@ function StatsView({ tips, loading }) {
         <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "12px", padding: "16px" }}>
           <div style={{ fontSize: "22px", marginBottom: "4px" }}>{streakType === "win" ? "🔥" : streakType === "loss" ? "❄️" : "➖"}</div>
           <div style={{ color: streakType === "win" ? "#66bb6a" : streakType === "loss" ? "#ef5350" : "#333", fontFamily: "monospace", fontSize: "18px", fontWeight: "900" }}>{streak > 0 ? `${streak} ${streakType === "win" ? "W" : "L"}` : "—"}</div>
-          <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "1px", marginTop: "2px" }}>SÉRIE EN COURS</div>
+          <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", marginTop: "2px" }}>SÉRIE EN COURS</div>
         </div>
         <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "12px", padding: "16px" }}>
           <div style={{ fontSize: "22px", marginBottom: "4px" }}>⏳</div>
           <div style={{ color: GOLD, fontFamily: "monospace", fontSize: "18px", fontWeight: "900" }}>{pending}</div>
-          <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "1px", marginTop: "2px" }}>EN ATTENTE</div>
+          <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", marginTop: "2px" }}>EN ATTENTE</div>
         </div>
       </div>
       {last5.length > 0 && (
@@ -388,14 +372,14 @@ function StatsView({ tips, loading }) {
         </div>
       )}
       <GoldDivider />
-      <div style={{ marginTop: "14px", marginBottom: "14px" }}>
+      <div style={{ marginTop: "14px" }}>
         <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>PAR SPORT</div>
         {bySport.map(s => (
           <div key={s.id} style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 14px", marginBottom: "8px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <span style={{ fontSize: "18px" }}>{s.icon}</span>
-                <span style={{ color: s.color, fontSize: "11px", fontFamily: "monospace", letterSpacing: "1px" }}>{s.label.toUpperCase()}</span>
+                <span style={{ color: s.color, fontSize: "11px", fontFamily: "monospace" }}>{s.label.toUpperCase()}</span>
               </div>
               <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace" }}>
                 <span style={{ color: "#66bb6a" }}>{s.wins}W</span>
@@ -407,27 +391,6 @@ function StatsView({ tips, loading }) {
           </div>
         ))}
       </div>
-      {byConf.length > 0 && (
-        <div>
-          <GoldDivider />
-          <div style={{ marginTop: "14px" }}>
-            <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>PAR CONFIANCE</div>
-            {byConf.map(({ c, total: ct, wins: cw, losses: cl, rate: cr }) => (
-              <div key={c} style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 14px", marginBottom: "8px" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <div style={{ display: "flex", gap: "3px" }}>{[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= c ? CONFIDENCE_CONFIG[c].color : "#1e1e28", fontSize: "14px" }}>★</span>)}</div>
-                  <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace" }}>
-                    <span style={{ color: "#66bb6a" }}>{cw}W</span>
-                    <span style={{ color: "#ef5350" }}>{cl}L</span>
-                    <span style={{ color: cr !== null ? (cr >= 60 ? "#66bb6a" : cr >= 40 ? GOLD : "#ef5350") : "#333" }}>{cr !== null ? `${cr}%` : "—"}</span>
-                  </div>
-                </div>
-                <MiniBar wins={cw} losses={cl} total={cw+cl} color={CONFIDENCE_CONFIG[c].color} />
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -447,89 +410,62 @@ export default function App() {
   const [adminError, setAdminError] = useState("");
   const [saving, setSaving] = useState(false);
   const [showComboForm, setShowComboForm] = useState(false);
-  const [comboForm, setComboForm] = useState({
-    confidence: 0, note: "",
-    date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
-    selections: [
-      { match: "", bet: "1", odds: "" },
-      { match: "", bet: "1", odds: "" },
-    ],
-  });
   const tapCount = useRef(0);
   const tapTimer = useRef(null);
 
   const [form, setForm] = useState({
-    sport: "football", match: "", bet: "1",
-    customBet: "", odds: "", confidence: 0, note: "", time: "",
-    league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+    sport: "football", match: "", bet: "1", customBet: "", odds: "",
+    confidence: 0, note: "", time: "", league: null,
+    date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
   });
 
-  useEffect(() => {
-    fetchTips();
-    fetchCombos();
-  }, []);
+  const [comboForm, setComboForm] = useState({
+    confidence: 0, note: "",
+    date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
+    selections: [{ match: "", bet: "1", odds: "" }, { match: "", bet: "1", odds: "" }],
+  });
+
+  useEffect(() => { fetchTips(); fetchCombos(); }, []);
 
   const fetchTips = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from("tips")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error && data) setTips(data);
+    const { data } = await supabase.from("tips").select("*").order("created_at", { ascending: false });
+    if (data) setTips(data);
     setLoading(false);
   };
 
   const fetchCombos = async () => {
-    const { data, error } = await supabase
-      .from("combos")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (!error && data) setCombos(data);
+    const { data } = await supabase.from("combos").select("*").order("created_at", { ascending: false });
+    if (data) setCombos(data);
   };
 
   const handleLogoTap = () => {
     if (isAdmin) return;
     tapCount.current += 1;
     clearTimeout(tapTimer.current);
-    if (tapCount.current >= 5) {
-      tapCount.current = 0;
-      setShowAdminModal(true);
-    } else {
-      tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 2000);
-    }
+    if (tapCount.current >= 5) { tapCount.current = 0; setShowAdminModal(true); }
+    else tapTimer.current = setTimeout(() => { tapCount.current = 0; }, 2000);
   };
 
   const handleAdminLogin = async () => {
     setAdminError("");
-    const { error } = await supabase.auth.signInWithPassword({
-      email: adminEmail,
-      password: adminPassword,
-    });
-    if (error) {
-      setAdminError("Email ou mot de passe incorrect");
-    } else {
-      setIsAdmin(true);
-      setShowAdminModal(false);
-      setAdminEmail("");
-      setAdminPassword("");
-    }
+    const { error } = await supabase.auth.signInWithPassword({ email: adminEmail, password: adminPassword });
+    if (error) { setAdminError("Email ou mot de passe incorrect"); }
+    else { setIsAdmin(true); setShowAdminModal(false); setAdminEmail(""); setAdminPassword(""); }
   };
 
-  const handleAdminLogout = async () => {
-    await supabase.auth.signOut();
-    setIsAdmin(false);
-  };
+  const handleAdminLogout = async () => { await supabase.auth.signOut(); setIsAdmin(false); };
 
   const handleAdd = async () => {
     if (!form.match || form.confidence === 0) return;
     setSaving(true);
     const betLabel = form.bet === "Personnalisé" ? form.customBet : form.bet;
-    const { data, error } = await supabase.from("tips").insert([{
+    const { data } = await supabase.from("tips").insert([{
       sport: form.sport, league: form.league, match: form.match,
       bet: betLabel, odds: form.odds, confidence: form.confidence,
       note: form.note, date: form.date, time: form.time, result: null,
     }]).select();
-    if (!error && data) {
+    if (data) {
       setTips([data[0], ...tips]);
       setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", time: "", league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
       setView("list");
@@ -555,29 +491,20 @@ export default function App() {
   };
 
   const handleAddCombo = async () => {
-    const validSelections = comboForm.selections
-      .filter(s => s.match && s.odds)
-      .map(s => ({ match: s.match, bet: s.bet === "Personnalisé" ? (s.customBet || s.bet) : s.bet, odds: s.odds }));
+    const validSelections = comboForm.selections.filter(s => s.match && s.odds).map(s => ({
+      match: s.match, bet: s.bet === "Personnalisé" ? (s.customBet || s.bet) : s.bet, odds: s.odds
+    }));
     if (validSelections.length < 2 || comboForm.confidence === 0) return;
     setSaving(true);
     const totalOdds = validSelections.reduce((acc, s) => acc * parseFloat(s.odds), 1).toFixed(2);
-    const { data, error } = await supabase.from("combos").insert([{
-      date: comboForm.date,
-      selections: validSelections,
-      total_odds: totalOdds,
-      confidence: comboForm.confidence,
-      note: comboForm.note,
-      result: null,
+    const { data } = await supabase.from("combos").insert([{
+      date: comboForm.date, selections: validSelections, total_odds: totalOdds,
+      confidence: comboForm.confidence, note: comboForm.note, result: null,
     }]).select();
-    if (!error && data) {
+    if (data) {
       setCombos([data[0], ...combos]);
-      setComboForm({
-        confidence: 0, note: "",
-        date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
-        selections: [{ match: "", bet: "1", odds: "" }, { match: "", bet: "1", odds: "" }],
-      });
+      setComboForm({ confidence: 0, note: "", date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }), selections: [{ match: "", bet: "1", odds: "" }, { match: "", bet: "1", odds: "" }] });
       setShowComboForm(false);
-      setFootballLevel("combine");
     }
     setSaving(false);
   };
@@ -601,9 +528,16 @@ export default function App() {
     return true;
   });
 
+  const TipList = ({ items }) => (
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      {items.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
+    </div>
+  );
+
   return (
     <div style={{ minHeight: "100vh", background: BG, color: "#fff", fontFamily: "'Segoe UI', system-ui, sans-serif", maxWidth: "480px", margin: "0 auto", paddingBottom: "80px" }}>
 
+      {/* Header */}
       {view !== "home" && (
         <div style={{ padding: "24px 24px 16px", borderBottom: "1px solid #0e0e12", background: BG, position: "sticky", top: 0, zIndex: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -626,10 +560,13 @@ export default function App() {
         </div>
       )}
 
+      {/* Home */}
       {view === "home" && <HomeView tips={tips} onLogoTap={handleLogoTap} loading={loading} />}
 
+      {/* Liste */}
       {view === "list" && (
         <div style={{ padding: "20px" }}>
+          {/* Football */}
           {filterSport === "football" && (
             <div style={{ marginBottom: "20px" }}>
               {!footballLevel && (
@@ -653,6 +590,7 @@ export default function App() {
                   ))}
                 </div>
               )}
+
               {footballLevel && footballLevel !== "combine" && !activeLeague && (
                 <div>
                   <button onClick={() => setFootballLevel(null)} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
@@ -666,11 +604,7 @@ export default function App() {
                         style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
                         onMouseEnter={e => { e.currentTarget.style.background = league.color + "22"; e.currentTarget.style.borderColor = league.color + "44"; }}
                         onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
-                        {LEAGUE_LOGOS[league.id] ? (
-                          <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "32px", height: "32px", objectFit: "contain" }} onError={e => e.target.style.display = "none"} />
-                        ) : (
-                          <span style={{ fontSize: "24px" }}>{league.flag}</span>
-                        )}
+                        <span style={{ fontSize: "24px" }}>{league.flag}</span>
                         <span style={{ color: "#ccc", fontSize: "13px", fontWeight: "600", flex: 1, textAlign: "left" }}>{league.label}</span>
                         <span style={{ color: "#333", fontSize: "18px" }}>›</span>
                       </button>
@@ -678,28 +612,20 @@ export default function App() {
                   </div>
                 </div>
               )}
+
               {activeLeague && (
                 <div>
                   <button onClick={() => setActiveLeague(null)} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                    {LEAGUE_LOGOS[activeLeague] ? (
-                      <img src={LEAGUE_LOGOS[activeLeague]} alt="" style={{ width: "32px", height: "32px", objectFit: "contain" }} />
-                    ) : (
-                      <span style={{ fontSize: "24px" }}>{ALL_LEAGUES.find(l => l.id === activeLeague)?.flag}</span>
-                    )}
+                    <span style={{ fontSize: "24px" }}>{ALL_LEAGUES.find(l => l.id === activeLeague)?.flag}</span>
                     <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700" }}>{ALL_LEAGUES.find(l => l.id === activeLeague)?.label}</span>
                   </div>
                   {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                      {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
-                    </div>
-                  )}
+                    <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
+                  ) : <TipList items={filtered} />}
                 </div>
               )}
-            </div>
-          )}
+
               {footballLevel === "combine" && (
                 <div>
                   <button onClick={() => setFootballLevel(null)} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
@@ -719,14 +645,16 @@ export default function App() {
                       {comboForm.selections.map((sel, i) => (
                         <div key={i} style={{ marginBottom: "14px", background: BG3, borderRadius: "10px", padding: "14px" }}>
                           <div style={{ color: "#555", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>SÉLECTION {i + 1}</div>
-                          <input value={sel.match} onChange={e => { const s = [...comboForm.selections]; s[i].match = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ex: PSG vs Lyon" style={{ ...inputStyle, marginBottom: "8px", fontSize: "13px" }} />
+                          <input value={sel.match} onChange={e => { const s = [...comboForm.selections]; s[i].match = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ex: PSG - Lyon" style={{ ...inputStyle, marginBottom: "8px", fontSize: "13px" }} />
                           <div style={{ display: "flex", gap: "8px" }}>
                             <select value={sel.bet} onChange={e => { const s = [...comboForm.selections]; s[i].bet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} style={{ ...inputStyle, cursor: "pointer", fontSize: "13px", flex: 1 }}>
                               {BET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
                             </select>
-                            {sel.bet === "Personnalisé" && <textarea value={sel.customBet || ""} onChange={e => { const s = [...comboForm.selections]; s[i].customBet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ton pari..." style={{ ...inputStyle, fontSize: "13px", marginTop: "6px", minHeight: "60px", resize: "vertical" }} />}
                             <input value={sel.odds} onChange={e => { const s = [...comboForm.selections]; s[i].odds = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Cote" style={{ ...inputStyle, fontSize: "13px", width: "90px" }} type="number" step="0.01" />
                           </div>
+                          {sel.bet === "Personnalisé" && (
+                            <textarea value={sel.customBet || ""} onChange={e => { const s = [...comboForm.selections]; s[i].customBet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ton pari..." style={{ ...inputStyle, fontSize: "13px", marginTop: "6px", minHeight: "60px", resize: "vertical" }} />
+                          )}
                         </div>
                       ))}
                       <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
@@ -760,13 +688,13 @@ export default function App() {
                         <textarea value={comboForm.note} onChange={e => setComboForm({ ...comboForm, note: e.target.value })} placeholder="Analyse..." style={{ ...inputStyle, minHeight: "60px", resize: "vertical" }} />
                       </div>
                       <button onClick={handleAddCombo} disabled={comboForm.selections.filter(s => s.match && s.odds).length < 2 || comboForm.confidence === 0 || saving}
-                        style={{ width: "100%", padding: "13px", background: (comboForm.selections.filter(s => s.match && s.odds).length < 2 || comboForm.confidence === 0 || saving) ? "#1a1a22" : "linear-gradient(135deg, #7c3aed, #a78bfa)", border: "none", borderRadius: "10px", color: "#fff", fontSize: "13px", fontWeight: "800", cursor: "pointer", fontFamily: "monospace", letterSpacing: "2px" }}>
+                        style={{ width: "100%", padding: "13px", background: "linear-gradient(135deg, #7c3aed, #a78bfa)", border: "none", borderRadius: "10px", color: "#fff", fontSize: "13px", fontWeight: "800", cursor: "pointer", fontFamily: "monospace", letterSpacing: "2px" }}>
                         {saving ? "ENREGISTREMENT..." : "PUBLIER LE COMBINÉ"}
                       </button>
                     </div>
                   )}
                   {loading ? <LoadingSpinner /> : combos.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN COMBINÉ</div>
+                    <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px" }}>AUCUN COMBINÉ</div>
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                       {combos.map(combo => (
@@ -793,14 +721,14 @@ export default function App() {
                               </div>
                             ))}
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", background: "#a78bfa11", borderRadius: "8px", padding: "10px 12px" }}>
-                              <span style={{ color: "#888", fontSize: "11px", fontFamily: "monospace", letterSpacing: "1px" }}>COTE TOTALE</span>
+                              <span style={{ color: "#888", fontSize: "11px", fontFamily: "monospace" }}>COTE TOTALE</span>
                               <span style={{ color: "#a78bfa", fontSize: "20px", fontWeight: "900", fontFamily: "monospace" }}>{combo.total_odds}</span>
                             </div>
                             {combo.note && <div style={{ color: "#444", fontSize: "12px", fontStyle: "italic", marginTop: "10px" }}>{combo.note}</div>}
                             <GoldDivider />
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
                               <div style={{ display: "flex", gap: "4px" }}>
-                                {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= combo.confidence ? CONFIDENCE_CONFIG[combo.confidence]?.color : "#1e1e28", fontSize: "14px" }}>★</span>)}
+                                {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= combo.confidence ? (CONFIDENCE_CONFIG[combo.confidence]?.color || GOLD) : "#1e1e28", fontSize: "14px" }}>★</span>)}
                               </div>
                               {isAdmin ? (
                                 <div style={{ display: "flex", gap: "6px" }}>
@@ -818,6 +746,10 @@ export default function App() {
                   )}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Tennis */}
           {filterSport === "tennis" && (
             <div style={{ marginBottom: "20px" }}>
               {!activeLeague && (
@@ -858,28 +790,23 @@ export default function App() {
                     <span style={{ color: ALL_TENNIS.find(t => t.id === activeLeague)?.color, fontSize: "14px", fontWeight: "700" }}>{ALL_TENNIS.find(t => t.id === activeLeague)?.label}</span>
                   </div>
                   {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                      {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
-                    </div>
-                  )}
+                    <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
+                  ) : <TipList items={filtered} />}
                 </div>
               )}
             </div>
           )}
+
+          {/* NBA */}
           {filterSport === "nba" && (
             loading ? <LoadingSpinner /> : filtered.length === 0 ? (
-              <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px", letterSpacing: "2px" }}>AUCUN PRONOSTIC</div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                {filtered.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
-              </div>
-            )
+              <div style={{ textAlign: "center", padding: "30px 0", color: "#2a2a35", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
+            ) : <TipList items={filtered} />
           )}
         </div>
       )}
 
+      {/* Formulaire ajout */}
       {view === "add" && isAdmin && (
         <div style={{ padding: "24px 20px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
@@ -890,7 +817,7 @@ export default function App() {
             <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>SPORT</div>
             <div style={{ display: "flex", gap: "8px" }}>
               {SPORTS.map(s => (
-                <button key={s.id} onClick={() => setForm({ ...form, sport: s.id })}
+                <button key={s.id} onClick={() => setForm({ ...form, sport: s.id, league: null })}
                   style={{ background: form.sport === s.id ? `${s.color}22` : BG3, border: `1px solid ${form.sport === s.id ? s.color : "#1e1e28"}`, borderRadius: "10px", padding: "10px 14px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
                   <span style={{ fontSize: "22px" }}>{s.icon}</span>
                   <span style={{ color: form.sport === s.id ? s.color : "#333", fontSize: "10px", fontFamily: "monospace" }}>{s.label}</span>
@@ -898,6 +825,7 @@ export default function App() {
               ))}
             </div>
           </div>
+
           {form.sport === "football" && (
             <div style={{ marginBottom: "16px" }}>
               <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>COMPÉTITION</div>
@@ -909,11 +837,7 @@ export default function App() {
                 {LEAGUES_NATIONAL.map(league => (
                   <button key={league.id} onClick={() => setForm({ ...form, league: league.id })}
                     style={{ background: form.league === league.id ? `${league.color}22` : BG3, border: `1px solid ${form.league === league.id ? league.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
-                    {LEAGUE_LOGOS[league.id] ? (
-                      <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "24px", height: "24px", objectFit: "contain" }} />
-                    ) : (
-                      <span style={{ fontSize: "18px" }}>{league.flag}</span>
-                    )}
+                    <span style={{ fontSize: "18px" }}>{league.flag}</span>
                     <span style={{ color: form.league === league.id ? "#fff" : "#555", fontSize: "12px", fontWeight: "600" }}>{league.label}</span>
                   </button>
                 ))}
@@ -926,17 +850,14 @@ export default function App() {
                 {LEAGUES_INTERNATIONAL.map(league => (
                   <button key={league.id} onClick={() => setForm({ ...form, league: league.id })}
                     style={{ background: form.league === league.id ? `${league.color}22` : BG3, border: `1px solid ${form.league === league.id ? league.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
-                    {LEAGUE_LOGOS[league.id] ? (
-                      <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "24px", height: "24px", objectFit: "contain" }} />
-                    ) : (
-                      <span style={{ fontSize: "18px" }}>{league.flag}</span>
-                    )}
+                    <span style={{ fontSize: "18px" }}>{league.flag}</span>
                     <span style={{ color: form.league === league.id ? "#fff" : "#555", fontSize: "12px", fontWeight: "600" }}>{league.label}</span>
                   </button>
                 ))}
               </div>
             </div>
           )}
+
           {form.sport === "tennis" && (
             <div style={{ marginBottom: "16px" }}>
               <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>COMPÉTITION</div>
@@ -949,7 +870,7 @@ export default function App() {
                   <button key={t.id} onClick={() => setForm({ ...form, league: t.id })}
                     style={{ background: form.league === t.id ? `${t.color}22` : BG3, border: `1px solid ${form.league === t.id ? t.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
                     <span style={{ fontSize: "18px" }}>{t.flag}</span>
-                    <span style={{ color: form.league === t.id ? t.color : "#555", fontSize: "12px", fontWeight: "600" }}>{t.label}</span>
+                    <span style={{ color: form.league === t.id ? "#fff" : "#555", fontSize: "12px", fontWeight: "600" }}>{t.label}</span>
                   </button>
                 ))}
               </div>
@@ -962,12 +883,13 @@ export default function App() {
                   <button key={t.id} onClick={() => setForm({ ...form, league: t.id })}
                     style={{ background: form.league === t.id ? `${t.color}22` : BG3, border: `1px solid ${form.league === t.id ? t.color : "#1e1e28"}`, borderRadius: "8px", padding: "10px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
                     <span style={{ fontSize: "18px" }}>{t.flag}</span>
-                    <span style={{ color: form.league === t.id ? t.color : "#555", fontSize: "12px", fontWeight: "600" }}>{t.label}</span>
+                    <span style={{ color: form.league === t.id ? "#fff" : "#555", fontSize: "12px", fontWeight: "600" }}>{t.label}</span>
                   </button>
                 ))}
               </div>
             </div>
           )}
+
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>MATCH</div>
             <input value={form.match} onChange={e => setForm({ ...form, match: e.target.value })} placeholder="Ex: PSG - Real Madrid" style={inputStyle} />
@@ -981,7 +903,9 @@ export default function App() {
             <select value={form.bet} onChange={e => setForm({ ...form, bet: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
               {BET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
             </select>
-            {form.bet === "Personnalisé" && <textarea value={form.customBet} onChange={e => setForm({ ...form, customBet: e.target.value })} placeholder="Décris ton pari..." style={{ ...inputStyle, marginTop: "8px", minHeight: "70px", resize: "vertical" }} />}
+            {form.bet === "Personnalisé" && (
+              <textarea value={form.customBet} onChange={e => setForm({ ...form, customBet: e.target.value })} placeholder="Décris ton pari..." style={{ ...inputStyle, marginTop: "8px", minHeight: "70px", resize: "vertical" }} />
+            )}
           </div>
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>COTE</div>
@@ -1002,8 +926,10 @@ export default function App() {
         </div>
       )}
 
+      {/* Stats */}
       {view === "stats" && <StatsView tips={tips} loading={loading} />}
 
+      {/* Modal admin */}
       {showAdminModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,0.85)", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
           <div style={{ background: "#0e0e12", border: `1px solid ${GOLD}33`, borderRadius: "20px", padding: "32px 28px", width: "100%", maxWidth: "320px" }}>
@@ -1021,13 +947,17 @@ export default function App() {
         </div>
       )}
 
+      {/* Admin boutons */}
       {isAdmin && (
         <>
-          <button onClick={() => { setView("add"); setFootballLevel(null); setActiveLeague(null); setFilterSport("football"); setShowComboForm(false); }} style={{ position: "fixed", bottom: "90px", right: "20px", width: "56px", height: "56px", borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD})`, border: "none", fontSize: "26px", cursor: "pointer", boxShadow: `0 4px 20px ${GOLD}44`, zIndex: 50 }}>+</button>
-          <button onClick={handleAdminLogout} style={{ position: "fixed", top: "16px", right: "16px", background: "#ef535022", border: "1px solid #ef535044", borderRadius: "8px", padding: "6px 12px", color: "#ef5350", fontSize: "11px", cursor: "pointer", fontFamily: "monospace", zIndex: 50 }}>LOGOUT</button>
+          <button onClick={() => { setView("add"); setFootballLevel(null); setActiveLeague(null); setShowComboForm(false); }}
+            style={{ position: "fixed", bottom: "90px", right: "20px", width: "56px", height: "56px", borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD})`, border: "none", fontSize: "26px", cursor: "pointer", boxShadow: `0 4px 20px ${GOLD}44`, zIndex: 50 }}>+</button>
+          <button onClick={handleAdminLogout}
+            style={{ position: "fixed", top: "16px", right: "16px", background: "#ef535022", border: "1px solid #ef535044", borderRadius: "8px", padding: "6px 12px", color: "#ef5350", fontSize: "11px", cursor: "pointer", fontFamily: "monospace", zIndex: 50 }}>LOGOUT</button>
         </>
       )}
 
+      {/* Bottom nav */}
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: "480px", background: "#08080a", borderTop: "1px solid #0e0e12", display: "flex", justifyContent: "space-around", padding: "8px 0", zIndex: 20 }}>
         {[
           { id: "home", icon: "🏠", label: "ACCUEIL" },
