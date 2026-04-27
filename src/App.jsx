@@ -152,7 +152,7 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
 
         {hasTeams ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", gap: "8px" }}>
-            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
+            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "center" }}>{home}</span>
             <div style={{ flexShrink: 0, textAlign: "center", minWidth: "60px" }}>
               {tip.result && tip.score ? (
                 <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "14px", fontFamily: "monospace", fontWeight: "900" }}>{tip.score}</div>
@@ -162,7 +162,7 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
                 <div style={{ color: "#333", fontSize: "11px", fontFamily: "monospace" }}>-</div>
               )}
             </div>
-            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right" }}>{away}</span>
+            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "center" }}>{away}</span>
           </div>
         ) : (
           <div style={{ color: "#fff", fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{tip.match}</div>
