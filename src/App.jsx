@@ -974,7 +974,7 @@ export default function App() {
           </div>
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>HEURE DU MATCH</div>
-            <input value={form.time} onChange={e => setForm({ ...form, time: e.target.value })} placeholder="Ex: 21:00" style={inputStyle} />
+            <input value={form.time || ""} onChange={e => setForm({ ...form, time: e.target.value })} placeholder="Ex: 21:00" style={inputStyle} />
           </div>
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>TYPE DE PARI</div>
@@ -1023,7 +1023,7 @@ export default function App() {
 
       {isAdmin && (
         <>
-          <button onClick={() => { setView("add"); setFootballLevel(null); setActiveLeague(null); setFilterSport("football"); }} style={{ position: "fixed", bottom: "90px", right: "20px", width: "56px", height: "56px", borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD})`, border: "none", fontSize: "26px", cursor: "pointer", boxShadow: `0 4px 20px ${GOLD}44`, zIndex: 50 }}>+</button>
+          <button onClick={() => { setView("add"); setFootballLevel(null); setActiveLeague(null); setFilterSport("football"); setShowComboForm(false); }} style={{ position: "fixed", bottom: "90px", right: "20px", width: "56px", height: "56px", borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD})`, border: "none", fontSize: "26px", cursor: "pointer", boxShadow: `0 4px 20px ${GOLD}44`, zIndex: 50 }}>+</button>
           <button onClick={handleAdminLogout} style={{ position: "fixed", top: "16px", right: "16px", background: "#ef535022", border: "1px solid #ef535044", borderRadius: "8px", padding: "6px 12px", color: "#ef5350", fontSize: "11px", cursor: "pointer", fontFamily: "monospace", zIndex: 50 }}>LOGOUT</button>
         </>
       )}
