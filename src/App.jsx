@@ -121,10 +121,10 @@ function StarRating({ value, onChange }) {
 
 function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
   const sport = SPORTS.find(s => s.id === tip.sport) || SPORTS[0];
-  const conf = CONFIDENCE_CONFIG[tip.confidence];
+  const conf = CONFIDENCE_CONFIG[tip.confidence] || CONFIDENCE_CONFIG[3];
   const league = ALL_LEAGUES.find(l => l.id === tip.league);
-  const { home, away } = parseTeams(tip.match);
-  const hasTeams = home && away;
+  const { home, away } = parseTeams(tip.match || "");
+  const hasTeams = !!(home && away);
 
   return (
     <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "14px", overflow: "hidden" }}>
