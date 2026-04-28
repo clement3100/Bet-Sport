@@ -284,6 +284,167 @@ function HomeView({ tips, onLogoTap, loading }) {
   );
 }
 
+
+function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
+  const sport = SPORTS.find(s => s.id === tip.sport) || SPORTS[0];
+  const conf = CONFIDENCE_CONFIG[tip.confidence] || CONFIDENCE_CONFIG[3];
+  const league = ALL_LEAGUES.find(l => l.id === tip.league);
+  const { home, away } = parseTeams(tip.match || "");
+  const hasTeams = !!(home && away);
+
+  return (
+    <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "14px", overflow: "hidden" }}>
+      <div style={{ height: "2px", background: tip.result === "win" ? "linear-gradient(90deg, #66bb6a, #43a047)" : tip.result === "loss" ? "linear-gradient(90deg, #ef5350, #e53935)" : `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD})` }} />
+      <div style={{ padding: "14px 16px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontSize: "18px" }}>{sport.icon}</span>
+            <div>
+              <div style={{ color: sport.color, fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px" }}>{league ? league.label.toUpperCase() : sport.label.toUpperCase()}</div>
+              <div style={{ color: "#444", fontSize: "10px", fontFamily: "monospace" }}>{tip.date}</div>
+            </div>
+          </div>
+          {isAdmin && (
+            <button onClick={() => onDelete(tip.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#222", fontSize: "18px", padding: "0" }}
+              onMouseEnter={e => e.target.style.color = "#ef5350"}
+              onMouseLeave={e => e.target.style.color = "#222"}>✕</button>
+          )}
+        </div>
+
+        {hasTeams ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px", gap: "8px" }}>
+            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", width: "110px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right", paddingRight: "8px" }}>{home}</span>
+            <div style={{ flexShrink: 0, textAlign: "center", minWidth: "70px" }}>
+              {tip.result && tip.score ? (
+                <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "14px", fontFamily: "monospace", fontWeight: "900" }}>{tip.score}</div>
+              ) : tip.time ? (
+                <div style={{ color: "#888", fontSize: "12px", fontFamily: "monospace", background: BG3, borderRadius: "6px", padding: "3px 8px" }}>{tip.time}</div>
+              ) : (
+                <div style={{ color: "#333", fontSize: "11px", fontFamily: "monospace" }}>-</div>
+              )}
+            </div>
+            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", width: "110px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "left", paddingLeft: "8px" }}>{away}</span>
+          </div>
+        ) : (
+          <div style={{ color: "#fff", fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{tip.match}</div>
+        )}
+
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+          <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{tip.bet}</div>
+          {tip.odds && <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "12px", fontFamily: "monospace" }}>{tip.odds}</div>}
+        </div>
+
+        {tip.note && <div style={{ color: "#444", fontSize: "12px", fontStyle: "italic", marginBottom: "10px" }}>{tip.note}</div>}
+        <GoldDivider />
+
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
+          <div style={{ display: "flex", gap: "4px" }}>
+            {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= tip.confidence ? conf.color : "#1e1e28", fontSize: "14px" }}>★</span>)}
+          </div>
+          {isAdmin ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "6px" }}>
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button onClick={() => onToggleResult(tip.id, "win")} style={{ background: tip.result === "win" ? "#66bb6a22" : "none", border: `1px solid ${tip.result === "win" ? "#66bb6a" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "win" ? "#66bb6a" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>WIN</button>
+                <button onClick={() => onToggleResult(tip.id, "loss")} style={{ background: tip.result === "loss" ? "#ef535022" : "none", border: `1px solid ${tip.result === "loss" ? "#ef5350" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "loss" ? "#ef5350" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>LOSS</button>
+              </div>
+              {tip.result && (
+                <input value={tip.score || ""} onChange={e => onUpdateScore(tip.id, e.target.value)} placeholder="Score ex: 2 - 1"
+                  style={{ background: BG3, border: "1px solid #1e1e28", borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "11px", fontFamily: "monospace", width: "120px", outline: "none", textAlign: "center" }} />
+              )}
+            </div>
+          ) : (
+            tip.result && (
+              <div style={{ background: tip.result === "win" ? "#66bb6a18" : "#ef535018", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "4px 12px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", letterSpacing: "1px" }}>
+                {tip.result === "win" ? "✓ WIN" : "✗ LOSS"}
+              </div>
+            )
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RadialProgress({ value, size = 80, stroke = 7, color = GOLD }) {
+  const r = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = (value / 100) * circ;
+  return (
+    <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1a1a22" strokeWidth={stroke} />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth={stroke} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function MiniBar({ wins, losses, total, color }) {
+  const pct = total > 0 ? (wins / total) * 100 : 0;
+  return (
+    <div style={{ height: "4px", background: "#1a1a22", borderRadius: "4px", overflow: "hidden", marginTop: "8px" }}>
+      <div style={{ height: "100%", width: `${pct}%`, background: color, borderRadius: "4px" }} />
+    </div>
+  );
+}
+
+function HomeView({ tips, onLogoTap, loading }) {
+  const total = tips.length;
+  const wins = tips.filter(t => t.result === "win").length;
+  const losses = tips.filter(t => t.result === "loss").length;
+  const rate = (wins + losses) > 0 ? Math.round((wins / (wins + losses)) * 100) : null;
+  return (
+    <div style={{ minHeight: "100vh", background: BG }}>
+      <div style={{ padding: "40px 28px 36px", background: `linear-gradient(180deg, #0e0c08 0%, ${BG} 100%)`, position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "absolute", top: "-60px", right: "-60px", width: "240px", height: "240px", borderRadius: "50%", background: `radial-gradient(circle, ${GOLD}08 0%, transparent 70%)` }} />
+        <div style={{ display: "flex", alignItems: "center", gap: "16px", marginBottom: "32px" }}>
+          <div onClick={onLogoTap} style={{ width: "56px", height: "56px", borderRadius: "14px", background: `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", cursor: "pointer", boxShadow: `0 0 20px ${GOLD}44` }}>🏆</div>
+          <div>
+            <div style={{ fontFamily: "'Georgia', serif", fontWeight: "900", fontSize: "22px", background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD_DARK})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Bet Sport</div>
+            <div style={{ color: "#2a2a35", fontSize: "9px", fontFamily: "monospace", letterSpacing: "3px" }}>PRONOSTICS PREMIUM</div>
+          </div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1px", background: "#1a1a22", borderRadius: "14px", overflow: "hidden" }}>
+          {[
+            { label: "CONSEILS", value: loading ? "…" : total, color: "#fff" },
+            { label: "GAGNÉS", value: loading ? "…" : wins, color: "#66bb6a" },
+            { label: "RÉUSSITE", value: loading ? "…" : (rate !== null ? `${rate}%` : "—"), color: rate !== null && rate >= 60 ? "#66bb6a" : rate !== null && rate >= 40 ? GOLD : "#ef5350" },
+          ].map(s => (
+            <div key={s.label} style={{ background: "#0b0a07", padding: "20px 8px", textAlign: "center" }}>
+              <div style={{ color: s.color, fontSize: "28px", fontWeight: "900", fontFamily: "monospace" }}>{s.value}</div>
+              <div style={{ color: "#888", fontSize: "8px", fontFamily: "monospace", letterSpacing: "2px", marginTop: "4px" }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ padding: "24px 20px" }}>
+        {tips.filter(t => t.result).length > 0 && (
+          <div style={{ marginBottom: "56px" }}>
+            <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "8px" }}>DERNIERS RÉSULTATS</div>
+            <div style={{ display: "flex", gap: "6px" }}>
+              {tips.filter(t => t.result).slice(0, 5).map((t, i) => (
+                <div key={i} style={{ flex: 1, height: "36px", borderRadius: "10px", background: t.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${t.result === "win" ? "#66bb6a44" : "#ef535044"}`, display: "flex", alignItems: "center", justifyContent: "center", color: t.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>
+                  {t.result === "win" ? "W" : "L"}
+                </div>
+              ))}
+              {Array(Math.max(0, 5 - tips.filter(t => t.result).length)).fill(0).map((_, i) => (
+                <div key={i} style={{ flex: 1, height: "36px", borderRadius: "10px", background: "#0e0e12", border: "1px solid #1a1a22" }} />
+              ))}
+            </div>
+          </div>
+        )}
+        <div style={{ background: "#0b0b0f", border: "1px solid #13131a", borderRadius: "16px", padding: "20px" }}>
+          <div style={{ width: "28px", height: "2px", background: `linear-gradient(90deg, ${GOLD}, transparent)`, marginBottom: "12px" }} />
+          <div style={{ color: "#fff", fontSize: "14px", fontWeight: "700", marginBottom: "10px" }}>
+            Bienvenue sur <span style={{ background: `linear-gradient(135deg, ${GOLD_LIGHT}, ${GOLD_DARK})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Bet Sport</span>
+          </div>
+          <p style={{ color: "#666", fontSize: "13px", lineHeight: "1.75", margin: 0 }}>
+            Une équipe de pronostiqueurs professionnels partage ses meilleurs pronostics <span style={{ color: GOLD }}>gratuitement</span>.<br />Analyses rigoureuses, conseils fiables et résultats transparents.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatsView({ tips, combos, loading }) {
   const total = tips.length;
   const wins = tips.filter(t => t.result === "win").length;
