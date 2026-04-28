@@ -371,6 +371,63 @@ function StatsView({ tips, loading }) {
           </div>
         </div>
       )}
+
+      {/* Courbe de progression */}
+      {resolved.length >= 2 && (() => {
+        const points = [];
+        let w = 0, l = 0;
+        const chronological = [...tips].filter(t => t.result).reverse();
+        chronological.forEach((t, i) => {
+          if (t.result === "win") w++;
+          else l++;
+          const pct = Math.round(w / (w + l) * 100);
+          points.push({ x: i, y: pct, result: t.result });
+        });
+        const n = points.length;
+        const W = 300, H = 100;
+        const xScale = n > 1 ? W / (n - 1) : W;
+        const pathD = points.map((p, i) => `${i === 0 ? "M" : "L"} ${i * xScale} ${H - (p.y / 100) * H}`).join(" ");
+        const lastPct = points[points.length - 1]?.y;
+        const lineColor = lastPct >= 60 ? "#66bb6a" : lastPct >= 40 ? GOLD : "#ef5350";
+        return (
+          <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+              <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px" }}>COURBE DE PROGRESSION</div>
+              <div style={{ color: lineColor, fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>{lastPct}%</div>
+            </div>
+            <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ overflow: "visible" }}>
+              {/* Lignes de référence */}
+              {[25, 50, 75].map(y => (
+                <line key={y} x1="0" y1={H - (y/100)*H} x2={W} y2={H - (y/100)*H} stroke="#1a1a22" strokeWidth="1" strokeDasharray="4,4" />
+              ))}
+              {/* Labels */}
+              {[25, 50, 75].map(y => (
+                <text key={y} x="-4" y={H - (y/100)*H + 4} fontSize="8" fill="#333" textAnchor="end" fontFamily="monospace">{y}%</text>
+              ))}
+              {/* Zone remplie */}
+              <defs>
+                <linearGradient id="curveGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={lineColor} stopOpacity="0.3" />
+                  <stop offset="100%" stopColor={lineColor} stopOpacity="0.02" />
+                </linearGradient>
+              </defs>
+              <path d={`${pathD} L ${(n-1) * xScale} ${H} L 0 ${H} Z`} fill="url(#curveGrad)" />
+              {/* Ligne principale */}
+              <path d={pathD} fill="none" stroke={lineColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              {/* Points */}
+              {points.map((p, i) => (
+                <circle key={i} cx={i * xScale} cy={H - (p.y / 100) * H} r="3"
+                  fill={p.result === "win" ? "#66bb6a" : "#ef5350"}
+                  stroke={BG2} strokeWidth="1.5" />
+              ))}
+            </svg>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px" }}>
+              <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>DÉBUT</span>
+              <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>{n} PRONOSTICS</span>
+            </div>
+          </div>
+        );
+      })()}
       <GoldDivider />
       <div style={{ marginTop: "14px" }}>
         <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>PAR SPORT</div>
