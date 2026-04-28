@@ -329,18 +329,19 @@ function StatsView({ tips, loading }) {
           </div>
         </div>
         <div style={{ flex: 1 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-            {[
-              { label: "Conseils", value: total, color: "#fff" },
-              { label: "ROI estimé", value: roi >= 0 ? `+${roi.toFixed(1)}u` : `${roi.toFixed(1)}u`, color: roi >= 0 ? "#66bb6a" : "#ef5350" },
-              { label: "Gagnés", value: wins, color: "#66bb6a" },
-              { label: "Perdus", value: losses, color: "#ef5350" },
-            ].map(s => (
-              <div key={s.label}>
-                <div style={{ color: s.color, fontSize: "20px", fontWeight: "900", fontFamily: "monospace" }}>{s.value}</div>
-                <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "1px" }}>{s.label.toUpperCase()}</div>
-              </div>
-            ))}
+          <div style={{ textAlign: "center", marginBottom: "12px" }}>
+            <div style={{ color: "#fff", fontSize: "28px", fontWeight: "900", fontFamily: "monospace" }}>{total}</div>
+            <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "1px" }}>CONSEILS</div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-around" }}>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ color: "#66bb6a", fontSize: "24px", fontWeight: "900", fontFamily: "monospace" }}>{wins}</div>
+              <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "1px" }}>GAGNÉS</div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              <div style={{ color: "#ef5350", fontSize: "24px", fontWeight: "900", fontFamily: "monospace" }}>{losses}</div>
+              <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "1px" }}>PERDUS</div>
+            </div>
           </div>
         </div>
       </div>
