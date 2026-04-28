@@ -284,7 +284,7 @@ function HomeView({ tips, onLogoTap, loading }) {
   );
 }
 
-function StatsView({ tips, loading }) {
+function StatsView({ tips, combos, loading }) {
   const total = tips.length;
   const wins = tips.filter(t => t.result === "win").length;
   const losses = tips.filter(t => t.result === "loss").length;
@@ -345,7 +345,7 @@ function StatsView({ tips, loading }) {
           </div>
         </div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "16px" }}>
         <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "12px", padding: "16px" }}>
           <div style={{ fontSize: "22px", marginBottom: "4px" }}>{streakType === "win" ? "🔥" : streakType === "loss" ? "❄️" : "➖"}</div>
           <div style={{ color: streakType === "win" ? "#66bb6a" : streakType === "loss" ? "#ef5350" : "#333", fontFamily: "monospace", fontSize: "18px", fontWeight: "900" }}>{streak > 0 ? `${streak} ${streakType === "win" ? "W" : "L"}` : "—"}</div>
@@ -355,6 +355,17 @@ function StatsView({ tips, loading }) {
           <div style={{ fontSize: "22px", marginBottom: "4px" }}>⏳</div>
           <div style={{ color: GOLD, fontFamily: "monospace", fontSize: "18px", fontWeight: "900" }}>{pending}</div>
           <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", marginTop: "2px" }}>EN ATTENTE</div>
+        </div>
+        <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "12px", padding: "16px" }}>
+          <div style={{ fontSize: "22px", marginBottom: "4px" }}>♾️</div>
+          <div style={{ color: "#a78bfa", fontFamily: "monospace", fontSize: "18px", fontWeight: "900" }}>
+            {(() => {
+              const cw = combos.filter(c => c.result === "win").length;
+              const cl = combos.filter(c => c.result === "loss").length;
+              return (cw + cl) > 0 ? `${Math.round(cw / (cw + cl) * 100)}%` : "—";
+            })()}
+          </div>
+          <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", marginTop: "2px" }}>COMBINÉS</div>
         </div>
       </div>
       {last5.length > 0 && (
@@ -1042,7 +1053,7 @@ export default function App() {
       )}
 
       {/* Stats */}
-      {view === "stats" && <StatsView tips={tips} loading={loading} />}
+      {view === "stats" && <StatsView tips={tips} combos={combos} loading={loading} />}
 
       {/* Modal admin */}
       {showAdminModal && (
