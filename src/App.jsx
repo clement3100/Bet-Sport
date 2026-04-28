@@ -115,7 +115,40 @@ function StarRating({ value, onChange }) {
   );
 }
 
-function LoadingSpinner() {
+function Confetti({ show }) {
+  if (!show) return null;
+  const pieces = Array.from({ length: 30 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    delay: Math.random() * 0.5,
+    color: i % 3 === 0 ? "#f0b429" : i % 3 === 1 ? "#66bb6a" : "#ffd166",
+    size: Math.random() * 6 + 4,
+    rotation: Math.random() * 360,
+  }));
+  return (
+    <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 999, overflow: "hidden" }}>
+      <style>{`
+        @keyframes confettiFall {
+          0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+      `}</style>
+      {pieces.map(p => (
+        <div key={p.id} style={{
+          position: "absolute",
+          left: `${p.x}%`,
+          top: "-10px",
+          width: p.size,
+          height: p.size,
+          background: p.color,
+          borderRadius: p.id % 2 === 0 ? "50%" : "2px",
+          animation: `confettiFall ${1.5 + p.delay}s ease-in ${p.delay}s forwards`,
+          transform: `rotate(${p.rotation}deg)`,
+        }} />
+      ))}
+    </div>
+  );
+}
   return (
     <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "60px 0" }}>
       <div style={{ width: "32px", height: "32px", borderRadius: "50%", border: `3px solid #1a1a22`, borderTopColor: GOLD, animation: "spin 0.8s linear infinite" }} />
@@ -452,6 +485,35 @@ function StatsView({ tips, loading }) {
       <GoldDivider />
 
       <div style={{ marginTop: "14px" }}>
+        <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>PAR CHAMPIONNAT</div>
+        {ALL_LEAGUES.map(league => {
+          const lt = tips.filter(t => t.league === league.id);
+          const lw = lt.filter(t => t.result === "win").length;
+          const ll = lt.filter(t => t.result === "loss").length;
+          const lr = (lw+ll) > 0 ? Math.round(lw/(lw+ll)*100) : null;
+          if (lt.length === 0) return null;
+          return (
+            <div key={league.id} style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 14px", marginBottom: "8px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <span style={{ fontSize: "18px" }}>{league.flag}</span>
+                  <span style={{ color: "#ccc", fontSize: "11px", fontFamily: "monospace" }}>{league.label.toUpperCase()}</span>
+                </div>
+                <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace" }}>
+                  <span style={{ color: "#66bb6a" }}>{lw}W</span>
+                  <span style={{ color: "#ef5350" }}>{ll}L</span>
+                  <span style={{ color: lr !== null ? (lr >= 60 ? "#66bb6a" : lr >= 40 ? GOLD : "#ef5350") : "#333" }}>{lr !== null ? `${lr}%` : "—"}</span>
+                </div>
+              </div>
+              <MiniBar wins={lw} losses={ll} total={lw+ll} color={league.color} />
+            </div>
+          );
+        })}
+      </div>
+
+      <GoldDivider />
+
+      <div style={{ marginTop: "14px" }}>
         <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>PAR CONFIANCE</div>
         {[5,4,3,2,1].map(c => {
           const ct = tips.filter(t => t.confidence === c);
@@ -494,6 +556,7 @@ export default function App() {
   const [adminPassword, setAdminPassword] = useState("");
   const [adminError, setAdminError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [showComboForm, setShowComboForm] = useState(false);
   const tapCount = useRef(0);
   const tapTimer = useRef(null);
@@ -568,6 +631,10 @@ export default function App() {
     const newResult = tip.result === res ? null : res;
     await supabase.from("tips").update({ result: newResult }).eq("id", id);
     setTips(tips.map(t => t.id === id ? { ...t, result: newResult } : t));
+    if (newResult === "win") {
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2500);
+    }
   };
 
   const handleUpdateScore = async (id, score) => {
@@ -1041,6 +1108,8 @@ export default function App() {
             style={{ position: "fixed", top: "16px", right: "16px", background: "#ef535022", border: "1px solid #ef535044", borderRadius: "8px", padding: "6px 12px", color: "#ef5350", fontSize: "11px", cursor: "pointer", fontFamily: "monospace", zIndex: 50 }}>LOGOUT</button>
         </>
       )}
+
+      <Confetti show={showConfetti} />
 
       {/* Bottom nav */}
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: "480px", background: "#08080a", borderTop: "1px solid #0e0e12", display: "flex", justifyContent: "space-around", padding: "8px 0", zIndex: 20 }}>
