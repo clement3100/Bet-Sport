@@ -391,6 +391,34 @@ function StatsView({ tips, loading }) {
           </div>
         ))}
       </div>
+
+      <GoldDivider />
+
+      <div style={{ marginTop: "14px" }}>
+        <div style={{ color: "#333", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>PAR CONFIANCE</div>
+        {[5,4,3,2,1].map(c => {
+          const ct = tips.filter(t => t.confidence === c);
+          const cw = ct.filter(t => t.result === "win").length;
+          const cl = ct.filter(t => t.result === "loss").length;
+          const cr = (cw+cl) > 0 ? Math.round(cw/(cw+cl)*100) : null;
+          if (ct.length === 0) return null;
+          return (
+            <div key={c} style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 14px", marginBottom: "8px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ display: "flex", gap: "3px" }}>
+                  {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= c ? CONFIDENCE_CONFIG[c].color : "#1e1e28", fontSize: "14px" }}>★</span>)}
+                </div>
+                <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace" }}>
+                  <span style={{ color: "#66bb6a" }}>{cw}W</span>
+                  <span style={{ color: "#ef5350" }}>{cl}L</span>
+                  <span style={{ color: cr !== null ? (cr >= 60 ? "#66bb6a" : cr >= 40 ? GOLD : "#ef5350") : "#333" }}>{cr !== null ? `${cr}%` : "—"}</span>
+                </div>
+              </div>
+              <MiniBar wins={cw} losses={cl} total={cw+cl} color={CONFIDENCE_CONFIG[c].color} />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
