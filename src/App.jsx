@@ -532,6 +532,7 @@ export default function App() {
   const [adminError, setAdminError] = useState("");
   const [saving, setSaving] = useState(false);
   const [showComboForm, setShowComboForm] = useState(false);
+  const [sportTransitioning, setSportTransitioning] = useState(false);
   const tapCount = useRef(0);
   const tapTimer = useRef(null);
 
@@ -557,6 +558,17 @@ export default function App() {
       setView(newView);
       setTransitioning(false);
     }, 200);
+  };
+
+  const changeSport = (newSport) => {
+    if (newSport === filterSport) return;
+    setSportTransitioning(true);
+    setTimeout(() => {
+      setFilterSport(newSport);
+      setActiveLeague(null);
+      setFootballLevel(null);
+      setSportTransitioning(false);
+    }, 180);
   };
 
   const fetchTips = async () => {
@@ -691,7 +703,7 @@ export default function App() {
           {view === "list" && (
             <div style={{ marginTop: "14px", display: "flex", gap: "6px", flexWrap: "wrap" }}>
               {SPORTS.map(s => (
-                <button key={s.id} onClick={() => { setFilterSport(s.id); setActiveLeague(null); setFootballLevel(null); }}
+                <button key={s.id} onClick={() => changeSport(s.id)}
                   style={{ background: filterSport === s.id ? `${s.color}22` : "none", border: `1px solid ${filterSport === s.id ? s.color : "#1e1e28"}`, borderRadius: "20px", padding: "6px 14px", color: filterSport === s.id ? s.color : "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", display: "flex", alignItems: "center", gap: "6px" }}>
                   {s.icon} {s.label}
                 </button>
@@ -707,6 +719,7 @@ export default function App() {
       {/* Liste */}
       {view === "list" && (
         <div style={{ padding: "20px" }}>
+          <div className={sportTransitioning ? "page-exit" : "page-enter"} key={filterSport}>
           {/* Football */}
           {filterSport === "football" && (
             <div style={{ marginBottom: "20px" }}>
@@ -944,6 +957,7 @@ export default function App() {
               <div style={{ textAlign: "center", padding: "30px 0", color: "#555", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
             ) : <TipList items={filtered} />
           )}
+          </div>{/* fin sport transition */}
         </div>
       )}
 
