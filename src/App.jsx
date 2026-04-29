@@ -773,7 +773,7 @@ export default function App() {
                         onMouseEnter={e => { e.currentTarget.style.background = league.color + "22"; e.currentTarget.style.borderColor = league.color + "44"; }}
                         onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
                         {LEAGUE_LOGOS[league.id] ? (
-                          <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "32px", height: "32px", objectFit: "contain" }} onError={e => { e.target.style.display = "none"; }} />
+                          <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "32px", height: "32px", objectFit: "contain" }} />
                         ) : (
                           <span style={{ fontSize: "24px" }}>{league.flag}</span>
                         )}
