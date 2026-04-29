@@ -5,7 +5,7 @@ const SUPABASE_URL = "https://mamiervnrsnpnkusgvgu.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_r95oTdvQUGpXJJwQKgKU6Q_HAX9aCGl";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const GOLD = "#f0b429";
+const GOLD = "#f0b429"; // v2
 const GOLD_LIGHT = "#ffd166";
 const GOLD_DARK = "#b8860b";
 const BG = "#070709";
