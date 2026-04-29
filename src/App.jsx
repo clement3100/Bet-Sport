@@ -12,7 +12,19 @@ const BG = "#070709";
 const BG2 = "#0e0e12";
 const BG3 = "#13131a";
 
-const SPORTS = [
+const LEAGUE_LOGOS = {
+  premier_league: "/Public/Ligues/premier_league.png.png",
+  ligue1: "/Public/Ligues/ligue1.png.png",
+  laliga: "/Public/Ligues/laliga.png.jpg",
+  bundesliga: "/Public/Ligues/bundesliga.png.jpg",
+  serie_a: "/Public/Ligues/serie_a.png.jpg",
+  saudi: "/Public/Ligues/saudi.png.webp",
+  liga_portugal: "/Public/Ligues/liga_portugal.png.jpg",
+  super_lig: "/Public/Ligues/super_lig.png.jpg",
+  eredivisie: "/Public/Ligues/eredivisie.png.png",
+  champions_league: "/Public/Ligues/champoins_league.png.webp",
+  world_cup: "/Public/Ligues/world_cup.png.png",
+};
   { id: "football", label: "Football", icon: "⚽", color: "#f0b429" },
   { id: "nba", label: "NBA", icon: "🏀", color: "#e07b39" },
   { id: "tennis", label: "Tennis", icon: "🎾", color: "#8bc34a" },
@@ -758,7 +770,11 @@ export default function App() {
                         style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
                         onMouseEnter={e => { e.currentTarget.style.background = league.color + "22"; e.currentTarget.style.borderColor = league.color + "44"; }}
                         onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
-                        <span style={{ fontSize: "24px" }}>{league.flag}</span>
+                        {LEAGUE_LOGOS[league.id] ? (
+                          <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "32px", height: "32px", objectFit: "contain" }} onError={e => { e.target.style.display = "none"; }} />
+                        ) : (
+                          <span style={{ fontSize: "24px" }}>{league.flag}</span>
+                        )}
                         <span style={{ color: "#ccc", fontSize: "13px", fontWeight: "600", flex: 1, textAlign: "left" }}>{league.label}</span>
                         <span style={{ color: "#333", fontSize: "18px" }}>›</span>
                       </button>
