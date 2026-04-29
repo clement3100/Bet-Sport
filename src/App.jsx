@@ -520,6 +520,8 @@ export default function App() {
   const [combos, setCombos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState("home");
+  const [prevView, setPrevView] = useState(null);
+  const [transitioning, setTransitioning] = useState(false);
   const [filterSport, setFilterSport] = useState("football");
   const [footballLevel, setFootballLevel] = useState(null);
   const [activeLeague, setActiveLeague] = useState(null);
@@ -546,6 +548,16 @@ export default function App() {
   });
 
   useEffect(() => { fetchTips(); fetchCombos(); }, []);
+
+  const navigateTo = (newView) => {
+    if (newView === view) return;
+    setTransitioning(true);
+    setTimeout(() => {
+      setPrevView(view);
+      setView(newView);
+      setTransitioning(false);
+    }, 200);
+  };
 
   const fetchTips = async () => {
     setLoading(true);
@@ -588,7 +600,7 @@ export default function App() {
     if (data) {
       setTips([data[0], ...tips]);
       setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", time: "", league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
-      setView("list");
+      navigateTo("list");
     }
     setSaving(false);
   };
@@ -655,7 +667,16 @@ export default function App() {
   );
 
   return (
-    <div style={{ minHeight: "100vh", background: BG, color: "#fff", fontFamily: "'Segoe UI', system-ui, sans-serif", maxWidth: "480px", margin: "0 auto", paddingBottom: "80px" }}>
+    <div style={{ minHeight: "100vh", background: BG, color: "#fff", fontFamily: "'Segoe UI', system-ui, sans-serif", maxWidth: "480px", margin: "0 auto", paddingBottom: "80px", overflow: "hidden" }}>
+      <style>{`
+        @keyframes slideIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-40px); opacity: 0; } }
+        .page-enter { animation: slideIn 0.25s ease forwards; }
+        .page-exit { animation: slideOut 0.2s ease forwards; }
+      `}</style>
+
+      {/* Contenu principal avec transition */}
+      <div className={transitioning ? "page-exit" : "page-enter"} key={view}>
 
       {/* Header */}
       {view !== "home" && (
@@ -1068,10 +1089,12 @@ export default function App() {
         </div>
       )}
 
+      </div>{/* fin contenu principal */}
+
       {/* Admin boutons */}
       {isAdmin && (
         <>
-          <button onClick={() => { setView("add"); setFootballLevel(null); setActiveLeague(null); setShowComboForm(false); }}
+          <button onClick={() => { navigateTo("add"); setFootballLevel(null); setActiveLeague(null); setShowComboForm(false); }}
             style={{ position: "fixed", bottom: "90px", right: "20px", width: "56px", height: "56px", borderRadius: "50%", background: `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD})`, border: "none", fontSize: "26px", cursor: "pointer", boxShadow: `0 4px 20px ${GOLD}44`, zIndex: 50 }}>+</button>
           <button onClick={handleAdminLogout}
             style={{ position: "fixed", top: "16px", right: "16px", background: "#ef535022", border: "1px solid #ef535044", borderRadius: "8px", padding: "6px 12px", color: "#ef5350", fontSize: "11px", cursor: "pointer", fontFamily: "monospace", zIndex: 50 }}>LOGOUT</button>
@@ -1085,7 +1108,7 @@ export default function App() {
           { id: "list", icon: "📋", label: "CONSEILS" },
           { id: "stats", icon: "📊", label: "STATS" },
         ].map(tab => (
-          <button key={tab.id} onClick={() => setView(tab.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "6px 20px" }}>
+          <button key={tab.id} onClick={() => navigateTo(tab.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "6px 20px" }}>
             <span style={{ fontSize: "22px", filter: view === tab.id ? `drop-shadow(0 0 8px ${GOLD})` : "none" }}>{tab.icon}</span>
             <span style={{ fontSize: "9px", fontFamily: "monospace", letterSpacing: "1px", color: view === tab.id ? GOLD : "#222" }}>{tab.label}</span>
           </button>
