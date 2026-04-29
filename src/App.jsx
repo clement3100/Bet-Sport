@@ -13,17 +13,17 @@ const BG2 = "#0e0e12";
 const BG3 = "#13131a";
 
 const LEAGUE_LOGOS = {
-  premier_league: "/public/premier_league.png.png",
-  ligue1: "/public/ligue1.png.png",
-  laliga: "/public/laliga.png.jpg",
-  bundesliga: "/public/bundesliga.png.jpg",
-  serie_a: "/public/serie_a.png.jpg",
-  saudi: "/public/saudi.png.webp",
-  liga_portugal: "/public/liga_portugal.png.jpg",
-  super_lig: "/public/super_lig.png.jpg",
-  eredivisie: "/public/eredivisie.png.png",
-  champions_league: "/public/champoins_league.png.webp",
-  world_cup: "/public/world_cup.png.png",
+  premier_league: new URL('./premier_league.png.png', import.meta.url).href,
+  ligue1: new URL('./ligue1.png.png', import.meta.url).href,
+  laliga: new URL('./laliga.png.jpg', import.meta.url).href,
+  bundesliga: new URL('./bundesliga.png.jpg', import.meta.url).href,
+  serie_a: new URL('./serie_a.png.jpg', import.meta.url).href,
+  saudi: new URL('./saudi.png.webp', import.meta.url).href,
+  liga_portugal: new URL('./liga_portugal.png.jpg', import.meta.url).href,
+  super_lig: new URL('./super_lig.png.jpg', import.meta.url).href,
+  eredivisie: new URL('./eredivisie.png.png', import.meta.url).href,
+  champions_league: new URL('./champoins_league.png.webp', import.meta.url).href,
+  world_cup: new URL('./world_cup.png.png', import.meta.url).href,
 };
   { id: "football", label: "Football", icon: "⚽", color: "#f0b429" },
   { id: "nba", label: "NBA", icon: "🏀", color: "#e07b39" },
