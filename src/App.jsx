@@ -13,17 +13,17 @@ const BG2 = "#0e0e12";
 const BG3 = "#13131a";
 
 const LEAGUE_LOGOS = {
-  premier_league: new URL('./premier_league.png.png', import.meta.url).href,
-  ligue1: new URL('./ligue1.png.png', import.meta.url).href,
-  laliga: new URL('./laliga.png.jpg', import.meta.url).href,
-  bundesliga: new URL('./bundesliga.png.jpg', import.meta.url).href,
-  serie_a: new URL('./serie_a.png.jpg', import.meta.url).href,
-  saudi: new URL('./saudi.png.webp', import.meta.url).href,
-  liga_portugal: new URL('./liga_portugal.png.jpg', import.meta.url).href,
-  super_lig: new URL('./super_lig.png.jpg', import.meta.url).href,
-  eredivisie: new URL('./eredivisie.png.png', import.meta.url).href,
-  champions_league: new URL('./champoins_league.png.webp', import.meta.url).href,
-  world_cup: new URL('./world_cup.png.png', import.meta.url).href,
+  premier_league: "/logo/premier_league.png",
+  ligue1: "/logo/ligue1.png",
+  laliga: "/logo/laliga.jpg",
+  bundesliga: "/logo/bundesliga.jpg",
+  serie_a: "/logo/serie_a.jpg",
+  saudi: "/logo/saudi.webp",
+  liga_portugal: "/logo/liga_portugal.jpg",
+  super_lig: "/logo/super_lig.jpg",
+  eredivisie: "/logo/eredivisie.png",
+  champions_league: "/logo/champoins_league.webp",
+  world_cup: "/logo/world_cup.png",
 };
   { id: "football", label: "Football", icon: "⚽", color: "#f0b429" },
   { id: "nba", label: "NBA", icon: "🏀", color: "#e07b39" },
