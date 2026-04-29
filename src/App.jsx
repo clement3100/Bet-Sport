@@ -13,17 +13,17 @@ const BG2 = "#0e0e12";
 const BG3 = "#13131a";
 
 const LEAGUE_LOGOS = {
-  premier_league: "/logo/premier_league.png",
-  ligue1: "/logo/ligue1.png",
-  laliga: "/logo/laliga.jpg",
-  bundesliga: "/logo/bundesliga.jpg",
-  serie_a: "/logo/serie_a.jpg",
-  saudi: "/logo/saudi.webp",
-  liga_portugal: "/logo/liga_portugal.jpg",
-  super_lig: "/logo/super_lig.jpg",
-  eredivisie: "/logo/eredivisie.png",
-  champions_league: "/logo/champoins_league.webp",
-  world_cup: "/logo/world_cup.png",
+  premier_league: "/premier_league.png",
+  ligue1: "/ligue1.png",
+  laliga: "/laliga.jpg",
+  bundesliga: "/bundesliga.jpg",
+  serie_a: "/serie_a.jpg",
+  saudi: "/saudi.webp",
+  liga_portugal: "/liga_portugal.jpg",
+  super_lig: "/super_lig.jpg",
+  eredivisie: "/eredivisie.png",
+  champions_league: "/champoins_league.webp",
+  world_cup: "/world_cup.png",
 };
 
 const SPORTS = [
@@ -773,7 +773,7 @@ export default function App() {
                         onMouseEnter={e => { e.currentTarget.style.background = league.color + "22"; e.currentTarget.style.borderColor = league.color + "44"; }}
                         onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
                         {LEAGUE_LOGOS[league.id] ? (
-                          <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "32px", height: "32px", objectFit: "contain" }} />
+                          <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "36px", height: "36px", objectFit: "contain", borderRadius: "4px" }} />
                         ) : (
                           <span style={{ fontSize: "24px" }}>{league.flag}</span>
                         )}
