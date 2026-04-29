@@ -25,6 +25,8 @@ const LEAGUE_LOGOS = {
   champions_league: "/logo/champoins_league.webp",
   world_cup: "/logo/world_cup.png",
 };
+
+const SPORTS = [
   { id: "football", label: "Football", icon: "⚽", color: "#f0b429" },
   { id: "nba", label: "NBA", icon: "🏀", color: "#e07b39" },
   { id: "tennis", label: "Tennis", icon: "🎾", color: "#8bc34a" },
