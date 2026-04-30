@@ -18,6 +18,58 @@ const SPORTS = [
   { id: "tennis", label: "Tennis", icon: "🎾", color: "#8bc34a" },
 ];
 
+const TENNIS_FLAGS = [
+  { code: "🇷🇸", label: "Serbie" },
+  { code: "🇪🇸", label: "Espagne" },
+  { code: "🇩🇪", label: "Allemagne" },
+  { code: "🇮🇹", label: "Italie" },
+  { code: "🇷🇺", label: "Russie" },
+  { code: "🇬🇧", label: "Grande-Bretagne" },
+  { code: "🇺🇸", label: "États-Unis" },
+  { code: "🇫🇷", label: "France" },
+  { code: "🇦🇺", label: "Australie" },
+  { code: "🇨🇦", label: "Canada" },
+  { code: "🇳🇴", label: "Norvège" },
+  { code: "🇩🇰", label: "Danemark" },
+  { code: "🇬🇷", label: "Grèce" },
+  { code: "🇵🇱", label: "Pologne" },
+  { code: "🇧🇬", label: "Bulgarie" },
+  { code: "🇦🇷", label: "Argentine" },
+  { code: "🇧🇷", label: "Brésil" },
+  { code: "🇯🇵", label: "Japon" },
+  { code: "🇨🇳", label: "Chine" },
+  { code: "🇰🇷", label: "Corée du Sud" },
+  { code: "🇨🇿", label: "République Tchèque" },
+  { code: "🇸🇰", label: "Slovaquie" },
+  { code: "🇭🇺", label: "Hongrie" },
+  { code: "🇦🇹", label: "Autriche" },
+  { code: "🇨🇭", label: "Suisse" },
+  { code: "🇧🇪", label: "Belgique" },
+  { code: "🇳🇱", label: "Pays-Bas" },
+  { code: "🇸🇪", label: "Suède" },
+  { code: "🇫🇮", label: "Finlande" },
+  { code: "🇵🇹", label: "Portugal" },
+  { code: "🇷🇴", label: "Roumanie" },
+  { code: "🇭🇷", label: "Croatie" },
+  { code: "🇺🇦", label: "Ukraine" },
+  { code: "🇰🇿", label: "Kazakhstan" },
+  { code: "🇺🇿", label: "Ouzbékistan" },
+  { code: "🇿🇦", label: "Afrique du Sud" },
+  { code: "🇹🇳", label: "Tunisie" },
+  { code: "🇲🇦", label: "Maroc" },
+  { code: "🇨🇴", label: "Colombie" },
+  { code: "🇨🇱", label: "Chili" },
+  { code: "🇲🇽", label: "Mexique" },
+  { code: "🇮🇳", label: "Inde" },
+  { code: "🇹🇷", label: "Turquie" },
+  { code: "🇮🇱", label: "Israël" },
+  { code: "🇬🇪", label: "Géorgie" },
+  { code: "🇧🇾", label: "Biélorussie" },
+  { code: "🇱🇻", label: "Lettonie" },
+  { code: "🇪🇪", label: "Estonie" },
+  { code: "🇸🇮", label: "Slovénie" },
+];
+
 const LEAGUES_NATIONAL = [
   { id: "premier_league", label: "Premier League", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", color: "#3d0e5e" },
   { id: "ligue1", label: "Ligue 1", flag: "🇫🇷", color: "#003f8a" },
@@ -169,7 +221,10 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
 
         {hasTeams ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px", gap: "8px" }}>
-            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", width: "110px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right", paddingRight: "8px" }}>{home}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", width: "110px", justifyContent: "flex-end", paddingRight: "8px" }}>
+              <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
+              {tip.flag1 && <span style={{ fontSize: "18px", flexShrink: 0 }}>{tip.flag1}</span>}
+            </div>
             <div style={{ flexShrink: 0, textAlign: "center", minWidth: "70px" }}>
               {tip.result && tip.score ? (
                 <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "14px", fontFamily: "monospace", fontWeight: "900" }}>{tip.score}</div>
@@ -179,7 +234,10 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
                 <div style={{ color: "#333", fontSize: "11px", fontFamily: "monospace" }}>-</div>
               )}
             </div>
-            <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", width: "110px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "left", paddingLeft: "8px" }}>{away}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", width: "110px", justifyContent: "flex-start", paddingLeft: "8px" }}>
+              {tip.flag2 && <span style={{ fontSize: "18px", flexShrink: 0 }}>{tip.flag2}</span>}
+              <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{away}</span>
+            </div>
           </div>
         ) : (
           <div style={{ color: "#fff", fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{tip.match}</div>
@@ -538,7 +596,7 @@ export default function App() {
 
   const [form, setForm] = useState({
     sport: "football", match: "", bet: "1", customBet: "", odds: "",
-    confidence: 0, note: "", time: "", league: null,
+    confidence: 0, note: "", time: "", league: null, flag1: "", flag2: "",
     date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
   });
 
@@ -607,11 +665,12 @@ export default function App() {
     const { data } = await supabase.from("tips").insert([{
       sport: form.sport, league: form.league, match: form.match,
       bet: betLabel, odds: form.odds, confidence: form.confidence,
-      note: form.note, date: form.date, time: form.time, result: null,
+      note: form.note, date: form.date, time: form.time,
+      flag1: form.flag1, flag2: form.flag2, result: null,
     }]).select();
     if (data) {
       setTips([data[0], ...tips]);
-      setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", time: "", league: null, date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
+      setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", time: "", league: null, flag1: "", flag2: "", date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
       navigateTo("list");
     }
     setSaving(false);
@@ -1048,8 +1107,27 @@ export default function App() {
 
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>MATCH</div>
-            <input value={form.match} onChange={e => setForm({ ...form, match: e.target.value })} placeholder="Ex: PSG - Real Madrid" style={inputStyle} />
+            <input value={form.match} onChange={e => setForm({ ...form, match: e.target.value })} placeholder="Ex: Nadal - Djokovic" style={inputStyle} />
           </div>
+
+          {form.sport === "tennis" && (
+            <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
+              <div style={{ flex: 1 }}>
+                <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>DRAPEAU JOUEUR 1</div>
+                <select value={form.flag1} onChange={e => setForm({ ...form, flag1: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
+                  <option value="">— Pays</option>
+                  {TENNIS_FLAGS.map(f => <option key={f.code} value={f.code}>{f.code} {f.label}</option>)}
+                </select>
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>DRAPEAU JOUEUR 2</div>
+                <select value={form.flag2} onChange={e => setForm({ ...form, flag2: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
+                  <option value="">— Pays</option>
+                  {TENNIS_FLAGS.map(f => <option key={f.code} value={f.code}>{f.code} {f.label}</option>)}
+                </select>
+              </div>
+            </div>
+          )}
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>HEURE DU MATCH</div>
             <input value={form.time || ""} onChange={e => setForm({ ...form, time: e.target.value })} placeholder="Ex: 21:00" style={inputStyle} />
