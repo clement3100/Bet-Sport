@@ -19,55 +19,55 @@ const SPORTS = [
 ];
 
 const TENNIS_FLAGS = [
-  { code: "🇷🇸", label: "Serbie" },
-  { code: "🇪🇸", label: "Espagne" },
-  { code: "🇩🇪", label: "Allemagne" },
-  { code: "🇮🇹", label: "Italie" },
-  { code: "🇷🇺", label: "Russie" },
-  { code: "🇬🇧", label: "Grande-Bretagne" },
-  { code: "🇺🇸", label: "États-Unis" },
-  { code: "🇫🇷", label: "France" },
-  { code: "🇦🇺", label: "Australie" },
-  { code: "🇨🇦", label: "Canada" },
-  { code: "🇳🇴", label: "Norvège" },
-  { code: "🇩🇰", label: "Danemark" },
-  { code: "🇬🇷", label: "Grèce" },
-  { code: "🇵🇱", label: "Pologne" },
-  { code: "🇧🇬", label: "Bulgarie" },
-  { code: "🇦🇷", label: "Argentine" },
-  { code: "🇧🇷", label: "Brésil" },
-  { code: "🇯🇵", label: "Japon" },
-  { code: "🇨🇳", label: "Chine" },
-  { code: "🇰🇷", label: "Corée du Sud" },
-  { code: "🇨🇿", label: "République Tchèque" },
-  { code: "🇸🇰", label: "Slovaquie" },
-  { code: "🇭🇺", label: "Hongrie" },
-  { code: "🇦🇹", label: "Autriche" },
-  { code: "🇨🇭", label: "Suisse" },
-  { code: "🇧🇪", label: "Belgique" },
-  { code: "🇳🇱", label: "Pays-Bas" },
-  { code: "🇸🇪", label: "Suède" },
-  { code: "🇫🇮", label: "Finlande" },
-  { code: "🇵🇹", label: "Portugal" },
-  { code: "🇷🇴", label: "Roumanie" },
-  { code: "🇭🇷", label: "Croatie" },
-  { code: "🇺🇦", label: "Ukraine" },
-  { code: "🇰🇿", label: "Kazakhstan" },
-  { code: "🇺🇿", label: "Ouzbékistan" },
   { code: "🇿🇦", label: "Afrique du Sud" },
-  { code: "🇹🇳", label: "Tunisie" },
-  { code: "🇲🇦", label: "Maroc" },
-  { code: "🇨🇴", label: "Colombie" },
-  { code: "🇨🇱", label: "Chili" },
-  { code: "🇲🇽", label: "Mexique" },
-  { code: "🇮🇳", label: "Inde" },
-  { code: "🇹🇷", label: "Turquie" },
-  { code: "🇮🇱", label: "Israël" },
-  { code: "🇬🇪", label: "Géorgie" },
+  { code: "🇩🇪", label: "Allemagne" },
+  { code: "🇦🇷", label: "Argentine" },
+  { code: "🇦🇺", label: "Australie" },
+  { code: "🇦🇹", label: "Autriche" },
+  { code: "🇧🇪", label: "Belgique" },
   { code: "🇧🇾", label: "Biélorussie" },
-  { code: "🇱🇻", label: "Lettonie" },
+  { code: "🇧🇬", label: "Bulgarie" },
+  { code: "🇨🇦", label: "Canada" },
+  { code: "🇨🇱", label: "Chili" },
+  { code: "🇨🇳", label: "Chine" },
+  { code: "🇨🇴", label: "Colombie" },
+  { code: "🇰🇷", label: "Corée du Sud" },
+  { code: "🇭🇷", label: "Croatie" },
+  { code: "🇩🇰", label: "Danemark" },
   { code: "🇪🇪", label: "Estonie" },
+  { code: "🇺🇸", label: "États-Unis" },
+  { code: "🇫🇮", label: "Finlande" },
+  { code: "🇫🇷", label: "France" },
+  { code: "🇬🇪", label: "Géorgie" },
+  { code: "🇬🇷", label: "Grèce" },
+  { code: "🇭🇺", label: "Hongrie" },
+  { code: "🇮🇳", label: "Inde" },
+  { code: "🇮🇱", label: "Israël" },
+  { code: "🇮🇹", label: "Italie" },
+  { code: "🇯🇵", label: "Japon" },
+  { code: "🇰🇿", label: "Kazakhstan" },
+  { code: "🇱🇻", label: "Lettonie" },
+  { code: "🇲🇦", label: "Maroc" },
+  { code: "🇲🇽", label: "Mexique" },
+  { code: "🇳🇴", label: "Norvège" },
+  { code: "🇺🇿", label: "Ouzbékistan" },
+  { code: "🇵🇧", label: "Palestine" },
+  { code: "🇳🇱", label: "Pays-Bas" },
+  { code: "🇵🇱", label: "Pologne" },
+  { code: "🇵🇹", label: "Portugal" },
+  { code: "🇨🇿", label: "République Tchèque" },
+  { code: "🇷🇴", label: "Roumanie" },
+  { code: "🇬🇧", label: "Royaume-Uni" },
+  { code: "🇷🇺", label: "Russie" },
+  { code: "🇷🇸", label: "Serbie" },
+  { code: "🇸🇰", label: "Slovaquie" },
   { code: "🇸🇮", label: "Slovénie" },
+  { code: "🇸🇪", label: "Suède" },
+  { code: "🇨🇭", label: "Suisse" },
+  { code: "🇹🇳", label: "Tunisie" },
+  { code: "🇹🇷", label: "Turquie" },
+  { code: "🇺🇦", label: "Ukraine" },
+  { code: "🇪🇸", label: "Espagne" },
 ];
 
 const LEAGUES_NATIONAL = [
@@ -222,8 +222,8 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
         {hasTeams ? (
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "12px", gap: "8px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", width: "110px", justifyContent: "flex-end", paddingRight: "8px" }}>
-              <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
               {tip.flag1 && <span style={{ fontSize: "18px", flexShrink: 0 }}>{tip.flag1}</span>}
+              <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{home}</span>
             </div>
             <div style={{ flexShrink: 0, textAlign: "center", minWidth: "70px" }}>
               {tip.result && tip.score ? (
@@ -235,8 +235,8 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
               )}
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "6px", width: "110px", justifyContent: "flex-start", paddingLeft: "8px" }}>
-              {tip.flag2 && <span style={{ fontSize: "18px", flexShrink: 0 }}>{tip.flag2}</span>}
               <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{away}</span>
+              {tip.flag2 && <span style={{ fontSize: "18px", flexShrink: 0 }}>{tip.flag2}</span>}
             </div>
           </div>
         ) : (
@@ -1110,35 +1110,25 @@ export default function App() {
             <input value={form.match} onChange={e => setForm({ ...form, match: e.target.value })} placeholder="Ex: Nadal - Djokovic" style={inputStyle} />
           </div>
 
-          {form.sport === "tennis" && (
+          {(form.sport === "tennis" || form.league === "world_cup") && (
             <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
               <div style={{ flex: 1 }}>
                 <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>
-                  DRAPEAU J1 {form.flag1 && <span style={{ fontSize: "16px" }}>{form.flag1}</span>}
+                  {form.sport === "tennis" ? "DRAPEAU JOUEUR 1" : "DRAPEAU ÉQUIPE 1"} {form.flag1 && <span style={{ fontSize: "16px" }}>{form.flag1}</span>}
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", maxHeight: "120px", overflowY: "auto", background: BG3, borderRadius: "10px", padding: "8px" }}>
-                  {TENNIS_FLAGS.map(f => (
-                    <button key={f.code} onClick={() => setForm({ ...form, flag1: f.code })}
-                      style={{ background: form.flag1 === f.code ? `${GOLD}33` : "none", border: `1px solid ${form.flag1 === f.code ? GOLD : "#1e1e28"}`, borderRadius: "6px", padding: "4px 6px", cursor: "pointer", fontSize: "18px" }}
-                      title={f.label}>
-                      {f.code}
-                    </button>
-                  ))}
-                </div>
+                <select value={form.flag1} onChange={e => setForm({ ...form, flag1: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
+                  <option value="">— Sélectionner</option>
+                  {TENNIS_FLAGS.map(f => <option key={f.code} value={f.code}>{f.code} {f.label}</option>)}
+                </select>
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>
-                  DRAPEAU J2 {form.flag2 && <span style={{ fontSize: "16px" }}>{form.flag2}</span>}
+                  {form.sport === "tennis" ? "DRAPEAU JOUEUR 2" : "DRAPEAU ÉQUIPE 2"} {form.flag2 && <span style={{ fontSize: "16px" }}>{form.flag2}</span>}
                 </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", maxHeight: "120px", overflowY: "auto", background: BG3, borderRadius: "10px", padding: "8px" }}>
-                  {TENNIS_FLAGS.map(f => (
-                    <button key={f.code} onClick={() => setForm({ ...form, flag2: f.code })}
-                      style={{ background: form.flag2 === f.code ? `${GOLD}33` : "none", border: `1px solid ${form.flag2 === f.code ? GOLD : "#1e1e28"}`, borderRadius: "6px", padding: "4px 6px", cursor: "pointer", fontSize: "18px" }}
-                      title={f.label}>
-                      {f.code}
-                    </button>
-                  ))}
-                </div>
+                <select value={form.flag2} onChange={e => setForm({ ...form, flag2: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
+                  <option value="">— Sélectionner</option>
+                  {TENNIS_FLAGS.map(f => <option key={f.code} value={f.code}>{f.code} {f.label}</option>)}
+                </select>
               </div>
             </div>
           )}
