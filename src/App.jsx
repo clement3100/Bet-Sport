@@ -5,26 +5,12 @@ const SUPABASE_URL = "https://mamiervnrsnpnkusgvgu.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_r95oTdvQUGpXJJwQKgKU6Q_HAX9aCGl";
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const GOLD = "#f0b429"; // v2
+const GOLD = "#f0b429";
 const GOLD_LIGHT = "#ffd166";
 const GOLD_DARK = "#b8860b";
 const BG = "#070709";
 const BG2 = "#0e0e12";
 const BG3 = "#13131a";
-
-const LEAGUE_LOGOS = {
-  premier_league: "/premier_league.png",
-  ligue1: "/ligue1.png",
-  laliga: "/laliga.jpg",
-  bundesliga: "/bundesliga.jpg",
-  serie_a: "/serie_a.jpg",
-  saudi: "/saudi.webp",
-  liga_portugal: "/liga_portugal.jpg",
-  super_lig: "/super_lig.jpg",
-  eredivisie: "/eredivisie.png",
-  champions_league: "/champoins_league.webp",
-  world_cup: "/world_cup.png",
-};
 
 const SPORTS = [
   { id: "football", label: "Football", icon: "⚽", color: "#f0b429" },
@@ -772,11 +758,7 @@ export default function App() {
                         style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
                         onMouseEnter={e => { e.currentTarget.style.background = league.color + "22"; e.currentTarget.style.borderColor = league.color + "44"; }}
                         onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
-                        {LEAGUE_LOGOS[league.id] ? (
-                          <img src={LEAGUE_LOGOS[league.id]} alt={league.label} style={{ width: "36px", height: "36px", objectFit: "contain", borderRadius: "4px" }} />
-                        ) : (
-                          <span style={{ fontSize: "24px" }}>{league.flag}</span>
-                        )}
+                        <span style={{ fontSize: "24px" }}>{league.flag}</span>
                         <span style={{ color: "#ccc", fontSize: "13px", fontWeight: "600", flex: 1, textAlign: "left" }}>{league.label}</span>
                         <span style={{ color: "#333", fontSize: "18px" }}>›</span>
                       </button>
