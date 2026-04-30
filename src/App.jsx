@@ -208,6 +208,8 @@ const LEAGUES_NATIONAL = [
 
 const LEAGUES_INTERNATIONAL = [
   { id: "champions_league", label: "Champions League", flag: "🏆", color: "#0e1f6e" },
+  { id: "europa_league", label: "Europa League", flag: "🟠", color: "#e8620a" },
+  { id: "conference_league", label: "Conference League", flag: "🟢", color: "#00a651" },
   { id: "world_cup", label: "World Cup", flag: "🌍", color: "#8B6914" },
 ];
 
