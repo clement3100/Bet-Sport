@@ -1113,18 +1113,32 @@ export default function App() {
           {form.sport === "tennis" && (
             <div style={{ display: "flex", gap: "10px", marginBottom: "16px" }}>
               <div style={{ flex: 1 }}>
-                <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>DRAPEAU JOUEUR 1</div>
-                <select value={form.flag1} onChange={e => setForm({ ...form, flag1: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
-                  <option value="">— Pays</option>
-                  {TENNIS_FLAGS.map(f => <option key={f.code} value={f.code}>{f.code} {f.label}</option>)}
-                </select>
+                <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>
+                  DRAPEAU J1 {form.flag1 && <span style={{ fontSize: "16px" }}>{form.flag1}</span>}
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", maxHeight: "120px", overflowY: "auto", background: BG3, borderRadius: "10px", padding: "8px" }}>
+                  {TENNIS_FLAGS.map(f => (
+                    <button key={f.code} onClick={() => setForm({ ...form, flag1: f.code })}
+                      style={{ background: form.flag1 === f.code ? `${GOLD}33` : "none", border: `1px solid ${form.flag1 === f.code ? GOLD : "#1e1e28"}`, borderRadius: "6px", padding: "4px 6px", cursor: "pointer", fontSize: "18px" }}
+                      title={f.label}>
+                      {f.code}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>DRAPEAU JOUEUR 2</div>
-                <select value={form.flag2} onChange={e => setForm({ ...form, flag2: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
-                  <option value="">— Pays</option>
-                  {TENNIS_FLAGS.map(f => <option key={f.code} value={f.code}>{f.code} {f.label}</option>)}
-                </select>
+                <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>
+                  DRAPEAU J2 {form.flag2 && <span style={{ fontSize: "16px" }}>{form.flag2}</span>}
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", maxHeight: "120px", overflowY: "auto", background: BG3, borderRadius: "10px", padding: "8px" }}>
+                  {TENNIS_FLAGS.map(f => (
+                    <button key={f.code} onClick={() => setForm({ ...form, flag2: f.code })}
+                      style={{ background: form.flag2 === f.code ? `${GOLD}33` : "none", border: `1px solid ${form.flag2 === f.code ? GOLD : "#1e1e28"}`, borderRadius: "6px", padding: "4px 6px", cursor: "pointer", fontSize: "18px" }}
+                      title={f.label}>
+                      {f.code}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           )}
