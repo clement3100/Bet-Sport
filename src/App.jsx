@@ -208,8 +208,8 @@ const LEAGUES_NATIONAL = [
 
 const LEAGUES_INTERNATIONAL = [
   { id: "champions_league", label: "Champions League", flag: "🏆", color: "#0e1f6e" },
-  { id: "europa_league", label: "Europa League", flag: "🟠", color: "#e8620a" },
-  { id: "conference_league", label: "Conference League", flag: "🟢", color: "#00a651" },
+  { id: "europa_league", label: "Europa League", flag: "🏅", color: "#e8620a" },
+  { id: "conference_league", label: "Conference League", flag: "🎖️", color: "#00a651" },
   { id: "world_cup", label: "World Cup", flag: "🌍", color: "#8B6914" },
 ];
 
@@ -353,7 +353,7 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
             </div>
             <div style={{ flexShrink: 0, textAlign: "center", minWidth: "70px" }}>
               {tip.result && tip.score ? (
-                <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "14px", fontFamily: "monospace", fontWeight: "900" }}>{tip.score}</div>
+                <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "13px", fontFamily: "monospace", fontWeight: "900", whiteSpace: "pre-line", textAlign: "center" }}>{tip.score}</div>
               ) : tip.time ? (
                 <div style={{ color: "#888", fontSize: "12px", fontFamily: "monospace", background: BG3, borderRadius: "6px", padding: "3px 8px" }}>{tip.time}</div>
               ) : (
@@ -388,8 +388,9 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
                 <button onClick={() => onToggleResult(tip.id, "loss")} style={{ background: tip.result === "loss" ? "#ef535022" : "none", border: `1px solid ${tip.result === "loss" ? "#ef5350" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "loss" ? "#ef5350" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>LOSS</button>
               </div>
               {tip.result && (
-                <input value={tip.score || ""} onChange={e => onUpdateScore(tip.id, e.target.value)} placeholder="Score ex: 2 - 1"
-                  style={{ background: BG3, border: "1px solid #1e1e28", borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "11px", fontFamily: "monospace", width: "120px", outline: "none", textAlign: "center" }} />
+                <textarea value={tip.score || ""} onChange={e => onUpdateScore(tip.id, e.target.value)}
+                  placeholder={tip.sport === "tennis" ? "6-3\n6-4" : "2 - 1"}
+                  style={{ background: BG3, border: "1px solid #1e1e28", borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "11px", fontFamily: "monospace", width: "120px", outline: "none", textAlign: "center", resize: "none", minHeight: tip.sport === "tennis" ? "55px" : "30px" }} />
               )}
             </div>
           ) : (
