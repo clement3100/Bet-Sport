@@ -883,6 +883,8 @@ export default function App() {
         @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-40px); opacity: 0; } }
         .page-enter { animation: slideIn 0.25s ease forwards; }
         .page-exit { animation: slideOut 0.2s ease forwards; }
+        @keyframes accordionOpen { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+        .accordion-content { animation: accordionOpen 0.25s ease forwards; }
       `}</style>
 
       {/* Contenu principal avec transition */}
@@ -943,38 +945,32 @@ export default function App() {
                 </div>
               )}
 
-              {footballLevel && footballLevel !== "combine" && !activeLeague && (
-                <div>
-                  <button onClick={() => setFootballLevel(null)} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
+              {footballLevel && footballLevel !== "combine" && (
+                <div className="accordion-content">
+                  <button onClick={() => { setFootballLevel(null); setActiveLeague(null); }} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
                   <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
                     <span style={{ fontSize: "20px" }}>{footballLevel === "nationale" ? "🏟️" : "🌐"}</span>
                     <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700" }}>{footballLevel === "nationale" ? "Nationale" : "Internationale"}</span>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
                     {(footballLevel === "nationale" ? LEAGUES_NATIONAL : LEAGUES_INTERNATIONAL).map(league => (
-                      <button key={league.id} onClick={() => setActiveLeague(league.id)}
-                        style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
-                        onMouseEnter={e => { e.currentTarget.style.background = league.color + "22"; e.currentTarget.style.borderColor = league.color + "44"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
-                        <span style={{ fontSize: "24px" }}>{league.flag}</span>
-                        <span style={{ color: "#ccc", fontSize: "13px", fontWeight: "600", flex: 1, textAlign: "left" }}>{league.label}</span>
-                        <span style={{ color: "#333", fontSize: "18px" }}>›</span>
-                      </button>
+                      <div key={league.id}>
+                        <button onClick={() => setActiveLeague(activeLeague === league.id ? null : league.id)}
+                          style={{ width: "100%", background: activeLeague === league.id ? league.color + "22" : BG2, border: `1px solid ${activeLeague === league.id ? league.color + "44" : "#1a1a22"}`, borderRadius: activeLeague === league.id ? "10px 10px 0 0" : "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}>
+                          <span style={{ fontSize: "24px" }}>{league.flag}</span>
+                          <span style={{ color: "#ccc", fontSize: "13px", fontWeight: "600", flex: 1, textAlign: "left" }}>{league.label}</span>
+                          <span style={{ color: "#333", fontSize: "18px", transform: activeLeague === league.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
+                        </button>
+                        {activeLeague === league.id && (
+                          <div className="accordion-content" style={{ background: BG2, border: `1px solid ${league.color}44`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "12px" }}>
+                            {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
+                              <div style={{ textAlign: "center", padding: "20px 0", color: "#555", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
+                            ) : <TipList items={filtered} />}
+                          </div>
+                        )}
+                      </div>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {activeLeague && (
-                <div>
-                  <button onClick={() => setActiveLeague(null)} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                    <span style={{ fontSize: "24px" }}>{ALL_LEAGUES.find(l => l.id === activeLeague)?.flag}</span>
-                    <span style={{ color: "#fff", fontSize: "14px", fontWeight: "700" }}>{ALL_LEAGUES.find(l => l.id === activeLeague)?.label}</span>
-                  </div>
-                  {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "30px 0", color: "#555", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
-                  ) : <TipList items={filtered} />}
                 </div>
               )}
 
@@ -1104,48 +1100,46 @@ export default function App() {
           {/* Tennis */}
           {filterSport === "tennis" && (
             <div style={{ marginBottom: "20px" }}>
-              {!activeLeague && (
-                <div>
-                  <div style={{ color: "#555", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "12px" }}>CIRCUITS</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "7px", marginBottom: "16px" }}>
-                    {TENNIS_TOURS.map(t => (
-                      <button key={t.id} onClick={() => setActiveLeague(t.id)}
-                        style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
-                        onMouseEnter={e => { e.currentTarget.style.background = t.color + "22"; e.currentTarget.style.borderColor = t.color + "44"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
-                        <span style={{ fontSize: "22px" }}>{t.flag}</span>
-                        <span style={{ color: "#fff", fontSize: "13px", fontWeight: "700", flex: 1, textAlign: "left" }}>{t.label}</span>
-                        <span style={{ color: "#333", fontSize: "18px" }}>›</span>
-                      </button>
-                    ))}
+              <div style={{ color: "#555", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "12px" }}>CIRCUITS</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "7px", marginBottom: "16px" }}>
+                {TENNIS_TOURS.map(t => (
+                  <div key={t.id}>
+                    <button onClick={() => setActiveLeague(activeLeague === t.id ? null : t.id)}
+                      style={{ width: "100%", background: activeLeague === t.id ? t.color + "22" : BG2, border: `1px solid ${activeLeague === t.id ? t.color + "44" : "#1a1a22"}`, borderRadius: activeLeague === t.id ? "10px 10px 0 0" : "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}>
+                      <span style={{ fontSize: "22px" }}>{t.flag}</span>
+                      <span style={{ color: "#fff", fontSize: "13px", fontWeight: "700", flex: 1, textAlign: "left" }}>{t.label}</span>
+                      <span style={{ color: "#333", fontSize: "18px", transform: activeLeague === t.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
+                    </button>
+                    {activeLeague === t.id && (
+                      <div className="accordion-content" style={{ background: BG2, border: `1px solid ${t.color}44`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "12px" }}>
+                        {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
+                          <div style={{ textAlign: "center", padding: "20px 0", color: "#555", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
+                        ) : <TipList items={filtered} />}
+                      </div>
+                    )}
                   </div>
-                  <div style={{ color: "#555", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "12px" }}>GRAND CHELEM</div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
-                    {TENNIS_SLAMS.map(t => (
-                      <button key={t.id} onClick={() => setActiveLeague(t.id)}
-                        style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
-                        onMouseEnter={e => { e.currentTarget.style.background = t.color + "22"; e.currentTarget.style.borderColor = t.color + "44"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = BG2; e.currentTarget.style.borderColor = "#1a1a22"; }}>
-                        <span style={{ fontSize: "22px" }}>{t.flag}</span>
-                        <span style={{ color: t.color, fontSize: "13px", fontWeight: "700", flex: 1, textAlign: "left" }}>{t.label}</span>
-                        <span style={{ color: "#333", fontSize: "18px" }}>›</span>
-                      </button>
-                    ))}
+                ))}
+              </div>
+              <div style={{ color: "#555", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "12px" }}>GRAND CHELEM</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "7px" }}>
+                {TENNIS_SLAMS.map(t => (
+                  <div key={t.id}>
+                    <button onClick={() => setActiveLeague(activeLeague === t.id ? null : t.id)}
+                      style={{ width: "100%", background: activeLeague === t.id ? t.color + "22" : BG2, border: `1px solid ${activeLeague === t.id ? t.color + "44" : "#1a1a22"}`, borderRadius: activeLeague === t.id ? "10px 10px 0 0" : "10px", padding: "12px 16px", cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}>
+                      <span style={{ fontSize: "22px" }}>{t.flag}</span>
+                      <span style={{ color: t.color, fontSize: "13px", fontWeight: "700", flex: 1, textAlign: "left" }}>{t.label}</span>
+                      <span style={{ color: "#333", fontSize: "18px", transform: activeLeague === t.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
+                    </button>
+                    {activeLeague === t.id && (
+                      <div className="accordion-content" style={{ background: BG2, border: `1px solid ${t.color}44`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "12px" }}>
+                        {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
+                          <div style={{ textAlign: "center", padding: "20px 0", color: "#555", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
+                        ) : <TipList items={filtered} />}
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
-              {activeLeague && (
-                <div>
-                  <button onClick={() => setActiveLeague(null)} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                    <span style={{ fontSize: "24px" }}>{ALL_TENNIS.find(t => t.id === activeLeague)?.flag}</span>
-                    <span style={{ color: ALL_TENNIS.find(t => t.id === activeLeague)?.color, fontSize: "14px", fontWeight: "700" }}>{ALL_TENNIS.find(t => t.id === activeLeague)?.label}</span>
-                  </div>
-                  {loading ? <LoadingSpinner /> : filtered.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "30px 0", color: "#555", fontFamily: "monospace", fontSize: "11px" }}>AUCUN PRONOSTIC</div>
-                  ) : <TipList items={filtered} />}
-                </div>
-              )}
+                ))}
+              </div>
             </div>
           )}
 
