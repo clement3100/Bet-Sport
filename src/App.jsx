@@ -659,49 +659,40 @@ function StatsView({ tips, combos, loading }) {
 
       <GoldDivider />
 
-      {/* Par championnat - accordéon */}
+      {/* Par championnat - section cachable */}
       <div style={{ marginTop: "14px" }}>
-        <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>PAR CHAMPIONNAT</div>
-        {ALL_LEAGUES.map(league => {
-          const lt = tips.filter(t => t.league === league.id);
-          const lw = lt.filter(t => t.result === "win").length;
-          const ll = lt.filter(t => t.result === "loss").length;
-          const lr = (lw+ll) > 0 ? Math.round(lw/(lw+ll)*100) : null;
-          if (lt.length === 0) return null;
-          const isOpen = openLeagueStat === league.id;
-          const leagueTips = lt.filter(t => t.result);
-          return (
-            <div key={league.id} style={{ marginBottom: "8px" }}>
-              <button onClick={() => setOpenLeagueStat(isOpen ? null : league.id)}
-                style={{ width: "100%", background: BG2, border: `1px solid ${isOpen ? league.color + "44" : "#1a1a22"}`, borderRadius: isOpen ? "10px 10px 0 0" : "10px", padding: "12px 14px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <span style={{ fontSize: "18px" }}>{league.flag}</span>
-                  <span style={{ color: "#ccc", fontSize: "11px", fontFamily: "monospace" }}>{league.label.toUpperCase()}</span>
-                </div>
-                <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace", alignItems: "center" }}>
-                  <span style={{ color: "#66bb6a" }}>{lw}W</span>
-                  <span style={{ color: "#ef5350" }}>{ll}L</span>
-                  <span style={{ color: lr !== null ? (lr >= 60 ? "#66bb6a" : lr >= 40 ? GOLD : "#ef5350") : "#888" }}>{lr !== null ? `${lr}%` : "—"}</span>
-                  <span style={{ color: "#333", fontSize: "16px", transform: isOpen ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
-                </div>
-              </button>
-              {isOpen && (
-                <div className="accordion-content" style={{ background: BG2, border: `1px solid ${league.color}44`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "12px 14px" }}>
-                  <MiniBar wins={lw} losses={ll} total={lw+ll} color={league.color} />
-                  <div style={{ marginTop: "10px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                    {leagueTips.slice(0, 5).map((t, i) => (
-                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "11px", fontFamily: "monospace" }}>
-                        <span style={{ color: "#555", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, marginRight: "8px" }}>{t.match}</span>
-                        <span style={{ color: t.result === "win" ? "#66bb6a" : "#ef5350", flexShrink: 0 }}>{t.result === "win" ? "✓ W" : "✗ L"}</span>
-                      </div>
-                    ))}
-                    {leagueTips.length > 5 && <div style={{ color: "#333", fontSize: "10px", fontFamily: "monospace", textAlign: "center" }}>+{leagueTips.length - 5} autres</div>}
+        <button onClick={() => setOpenLeagueStat(openLeagueStat === "section" ? null : "section")}
+          style={{ width: "100%", background: BG2, border: `1px solid ${openLeagueStat === "section" ? GOLD + "44" : "#1a1a22"}`, borderRadius: openLeagueStat === "section" ? "10px 10px 0 0" : "10px", padding: "12px 14px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: openLeagueStat === "section" ? "0" : "0" }}>
+          <span style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px" }}>PAR CHAMPIONNAT</span>
+          <span style={{ color: "#333", fontSize: "16px", transform: openLeagueStat === "section" ? "rotate(90deg)" : "none", transition: "transform 0.2s" }}>›</span>
+        </button>
+        {openLeagueStat === "section" && (
+          <div className="accordion-content" style={{ background: BG2, border: `1px solid ${GOLD}44`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "12px" }}>
+            {ALL_LEAGUES.map(league => {
+              const lt = tips.filter(t => t.league === league.id);
+              const lw = lt.filter(t => t.result === "win").length;
+              const ll = lt.filter(t => t.result === "loss").length;
+              const lr = (lw+ll) > 0 ? Math.round(lw/(lw+ll)*100) : null;
+              if (lt.length === 0) return null;
+              return (
+                <div key={league.id} style={{ background: BG3, border: "1px solid #1a1a22", borderRadius: "10px", padding: "12px 14px", marginBottom: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "18px" }}>{league.flag}</span>
+                      <span style={{ color: "#ccc", fontSize: "11px", fontFamily: "monospace" }}>{league.label.toUpperCase()}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace" }}>
+                      <span style={{ color: "#66bb6a" }}>{lw}W</span>
+                      <span style={{ color: "#ef5350" }}>{ll}L</span>
+                      <span style={{ color: lr !== null ? (lr >= 60 ? "#66bb6a" : lr >= 40 ? GOLD : "#ef5350") : "#888" }}>{lr !== null ? `${lr}%` : "—"}</span>
+                    </div>
                   </div>
+                  <MiniBar wins={lw} losses={ll} total={lw+ll} color={league.color} />
                 </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        )}
       </div>
 
       <GoldDivider />
@@ -955,7 +946,6 @@ export default function App() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                   {[
                     { id: "nationale", label: "Nationale", icon: "🏟️", sub: "9 championnats", color: GOLD },
-                    { id: "combine", label: "Combiné du jour", icon: "♾️", sub: "Sélections combinées", color: "#a78bfa" },
                     { id: "internationale", label: "Internationale", icon: "🌐", sub: "Champions League & World Cup", color: "#8b5cf6" },
                   ].map(cat => (
                     <button key={cat.id} onClick={() => setFootballLevel(cat.id)}
@@ -1002,126 +992,6 @@ export default function App() {
                 </div>
               )}
 
-              {footballLevel === "combine" && (
-                <div>
-                  <button onClick={() => { setFootballLevel(null); setShowComboForm(false); }} style={{ background: "none", border: "none", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px", padding: 0 }}>← Retour</button>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-                    <span style={{ fontSize: "24px" }}>♾️</span>
-                    <span style={{ color: "#a78bfa", fontSize: "14px", fontWeight: "700" }}>Combiné du jour</span>
-                  </div>
-                  {isAdmin && (
-                    <button onClick={() => setShowComboForm(!showComboForm)}
-                      style={{ width: "100%", padding: "12px", background: "#a78bfa22", border: "1px solid #a78bfa44", borderRadius: "10px", color: "#a78bfa", fontSize: "13px", fontWeight: "700", cursor: "pointer", fontFamily: "monospace", marginBottom: "16px" }}>
-                      {showComboForm ? "✕ Annuler" : "+ Nouveau combiné"}
-                    </button>
-                  )}
-                  {showComboForm && isAdmin && (
-                    <div style={{ background: BG2, border: "1px solid #a78bfa33", borderRadius: "14px", padding: "20px", marginBottom: "16px" }}>
-                      <div style={{ color: "#a78bfa", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "16px" }}>CRÉER UN COMBINÉ</div>
-                      {comboForm.selections.map((sel, i) => (
-                        <div key={i} style={{ marginBottom: "14px", background: BG3, borderRadius: "10px", padding: "14px" }}>
-                          <div style={{ color: "#555", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>SÉLECTION {i + 1}</div>
-                          <input value={sel.match} onChange={e => { const s = [...comboForm.selections]; s[i].match = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ex: PSG - Lyon" style={{ ...inputStyle, marginBottom: "8px", fontSize: "13px" }} />
-                          <div style={{ display: "flex", gap: "8px" }}>
-                            <select value={sel.bet} onChange={e => { const s = [...comboForm.selections]; s[i].bet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} style={{ ...inputStyle, cursor: "pointer", fontSize: "13px", flex: 1 }}>
-                              {BET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
-                            </select>
-                            <input value={sel.odds} onChange={e => { const s = [...comboForm.selections]; s[i].odds = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Cote" style={{ ...inputStyle, fontSize: "13px", width: "90px" }} type="number" step="0.01" />
-                          </div>
-                          {sel.bet === "Personnalisé" && (
-                            <textarea value={sel.customBet || ""} onChange={e => { const s = [...comboForm.selections]; s[i].customBet = e.target.value; setComboForm({ ...comboForm, selections: s }); }} placeholder="Ton pari..." style={{ ...inputStyle, fontSize: "13px", marginTop: "6px", minHeight: "60px", resize: "vertical" }} />
-                          )}
-                        </div>
-                      ))}
-                      <div style={{ display: "flex", gap: "8px", marginBottom: "14px" }}>
-                        {comboForm.selections.length < 4 && (
-                          <button onClick={() => setComboForm({ ...comboForm, selections: [...comboForm.selections, { match: "", bet: "1", odds: "" }] })}
-                            style={{ flex: 1, padding: "10px", background: "none", border: "1px dashed #333", borderRadius: "8px", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace" }}>
-                            + Ajouter sélection
-                          </button>
-                        )}
-                        {comboForm.selections.length > 2 && (
-                          <button onClick={() => setComboForm({ ...comboForm, selections: comboForm.selections.slice(0, -1) })}
-                            style={{ padding: "10px 14px", background: "none", border: "1px solid #ef535044", borderRadius: "8px", color: "#ef5350", fontSize: "12px", cursor: "pointer", fontFamily: "monospace" }}>
-                            - Retirer
-                          </button>
-                        )}
-                      </div>
-                      {comboForm.selections.filter(s => s.odds).length >= 2 && (
-                        <div style={{ background: "#a78bfa22", border: "1px solid #a78bfa44", borderRadius: "8px", padding: "10px 14px", marginBottom: "14px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                          <span style={{ color: "#888", fontSize: "11px", fontFamily: "monospace" }}>COTE TOTALE</span>
-                          <span style={{ color: "#a78bfa", fontSize: "18px", fontWeight: "900", fontFamily: "monospace" }}>
-                            {comboForm.selections.filter(s => s.odds).reduce((acc, s) => acc * parseFloat(s.odds || 1), 1).toFixed(2)}
-                          </span>
-                        </div>
-                      )}
-                      <div style={{ marginBottom: "14px" }}>
-                        <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>CONFIANCE</div>
-                        <StarRating value={comboForm.confidence} onChange={v => setComboForm({ ...comboForm, confidence: v })} />
-                      </div>
-                      <div style={{ marginBottom: "14px" }}>
-                        <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>NOTE (optionnel)</div>
-                        <textarea value={comboForm.note} onChange={e => setComboForm({ ...comboForm, note: e.target.value })} placeholder="Analyse..." style={{ ...inputStyle, minHeight: "60px", resize: "vertical" }} />
-                      </div>
-                      <button onClick={handleAddCombo} disabled={comboForm.selections.filter(s => s.match && s.odds).length < 2 || comboForm.confidence === 0 || saving}
-                        style={{ width: "100%", padding: "13px", background: "linear-gradient(135deg, #7c3aed, #a78bfa)", border: "none", borderRadius: "10px", color: "#fff", fontSize: "13px", fontWeight: "800", cursor: "pointer", fontFamily: "monospace", letterSpacing: "2px" }}>
-                        {saving ? "ENREGISTREMENT..." : "PUBLIER LE COMBINÉ"}
-                      </button>
-                    </div>
-                  )}
-                  {loading ? <LoadingSpinner /> : combos.length === 0 ? (
-                    <div style={{ textAlign: "center", padding: "30px 0", color: "#555", fontFamily: "monospace", fontSize: "11px" }}>AUCUN COMBINÉ</div>
-                  ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                      {combos.map(combo => (
-                        <div key={combo.id} style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "14px", overflow: "hidden" }}>
-                          <div style={{ height: "2px", background: combo.result === "win" ? "linear-gradient(90deg, #66bb6a, #43a047)" : combo.result === "loss" ? "linear-gradient(90deg, #ef5350, #e53935)" : "linear-gradient(90deg, #7c3aed, #a78bfa)" }} />
-                          <div style={{ padding: "16px 18px" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                                <span style={{ fontSize: "20px" }}>♾️</span>
-                                <div>
-                                  <div style={{ color: "#a78bfa", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px" }}>COMBINÉ DU JOUR</div>
-                                  <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace" }}>{combo.date}</div>
-                                </div>
-                              </div>
-                              {isAdmin && <button onClick={() => handleDeleteCombo(combo.id)} style={{ background: "none", border: "none", cursor: "pointer", color: "#222", fontSize: "18px" }} onMouseEnter={e => e.target.style.color = "#ef5350"} onMouseLeave={e => e.target.style.color = "#222"}>✕</button>}
-                            </div>
-                            {combo.selections.map((sel, i) => (
-                              <div key={i} style={{ background: BG3, borderRadius: "8px", padding: "10px 12px", marginBottom: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <div>
-                                  <div style={{ color: "#fff", fontSize: "13px", fontWeight: "600" }}>{sel.match}</div>
-                                  <div style={{ color: "#a78bfa", fontSize: "11px", fontFamily: "monospace", marginTop: "2px" }}>{sel.bet}</div>
-                                </div>
-                                <div style={{ color: GOLD, fontSize: "13px", fontFamily: "monospace", fontWeight: "700" }}>{sel.odds}</div>
-                              </div>
-                            ))}
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "12px", background: "#a78bfa11", borderRadius: "8px", padding: "10px 12px" }}>
-                              <span style={{ color: "#888", fontSize: "11px", fontFamily: "monospace" }}>COTE TOTALE</span>
-                              <span style={{ color: "#a78bfa", fontSize: "20px", fontWeight: "900", fontFamily: "monospace" }}>{combo.total_odds}</span>
-                            </div>
-                            {combo.note && <div style={{ color: "#555", fontSize: "12px", fontStyle: "italic", marginTop: "10px" }}>{combo.note}</div>}
-                            <GoldDivider />
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
-                              <div style={{ display: "flex", gap: "4px" }}>
-                                {[1,2,3,4,5].map(s => <span key={s} style={{ color: s <= combo.confidence ? (CONFIDENCE_CONFIG[combo.confidence]?.color || GOLD) : "#1e1e28", fontSize: "14px" }}>★</span>)}
-                              </div>
-                              {isAdmin ? (
-                                <div style={{ display: "flex", gap: "6px" }}>
-                                  <button onClick={() => handleToggleComboResult(combo.id, "win")} style={{ background: combo.result === "win" ? "#66bb6a22" : "none", border: `1px solid ${combo.result === "win" ? "#66bb6a" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: combo.result === "win" ? "#66bb6a" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>WIN</button>
-                                  <button onClick={() => handleToggleComboResult(combo.id, "loss")} style={{ background: combo.result === "loss" ? "#ef535022" : "none", border: `1px solid ${combo.result === "loss" ? "#ef5350" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: combo.result === "loss" ? "#ef5350" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>LOSS</button>
-                                </div>
-                              ) : (
-                                combo.result && <div style={{ background: combo.result === "win" ? "#66bb6a18" : "#ef535018", border: `1px solid ${combo.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "4px 12px", color: combo.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace" }}>{combo.result === "win" ? "✓ WIN" : "✗ LOSS"}</div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
             </div>
           )}
 
