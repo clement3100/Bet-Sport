@@ -365,13 +365,13 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
               {tip.flag2 && <span style={{ fontSize: "18px", flexShrink: 0 }}>{tip.flag2}</span>}
             </div>
           </div>
-          {tip.score_detail && tip.result && (
-            <div style={{ textAlign: "center", marginBottom: "10px" }}>
-              <div style={{ display: "inline-block", background: "#1a1a22", border: "1px solid #2a2a35", borderRadius: "6px", padding: "4px 12px", color: "#666", fontSize: "12px", fontFamily: "monospace", whiteSpace: "pre-line" }}>{tip.score_detail}</div>
-            </div>
-          )}
         ) : (
           <div style={{ color: "#fff", fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{tip.match}</div>
+        )}
+        {tip.score_detail && tip.result && (
+          <div style={{ textAlign: "center", marginBottom: "10px" }}>
+            <div style={{ display: "inline-block", background: "#1a1a22", border: "1px solid #2a2a35", borderRadius: "6px", padding: "4px 12px", color: "#666", fontSize: "12px", fontFamily: "monospace", whiteSpace: "pre-line" }}>{tip.score_detail}</div>
+          </div>
         )}
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
