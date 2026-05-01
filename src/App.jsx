@@ -353,12 +353,7 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
             </div>
             <div style={{ flexShrink: 0, textAlign: "center", minWidth: "70px" }}>
               {tip.result && tip.score ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "center" }}>
-                  <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "13px", fontFamily: "monospace", fontWeight: "900", whiteSpace: "pre-line", textAlign: "center" }}>{tip.score}</div>
-                  {tip.score_detail && (
-                    <div style={{ background: "#1a1a22", border: "1px solid #2a2a35", borderRadius: "6px", padding: "3px 8px", color: "#666", fontSize: "11px", fontFamily: "monospace", whiteSpace: "pre-line", textAlign: "center" }}>{tip.score_detail}</div>
-                  )}
-                </div>
+                <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "13px", fontFamily: "monospace", fontWeight: "900", textAlign: "center" }}>{tip.score}</div>
               ) : tip.time ? (
                 <div style={{ color: "#888", fontSize: "12px", fontFamily: "monospace", background: BG3, borderRadius: "6px", padding: "3px 8px" }}>{tip.time}</div>
               ) : (
@@ -370,6 +365,11 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
               {tip.flag2 && <span style={{ fontSize: "18px", flexShrink: 0 }}>{tip.flag2}</span>}
             </div>
           </div>
+          {tip.score_detail && tip.result && (
+            <div style={{ textAlign: "center", marginBottom: "10px" }}>
+              <div style={{ display: "inline-block", background: "#1a1a22", border: "1px solid #2a2a35", borderRadius: "6px", padding: "4px 12px", color: "#666", fontSize: "12px", fontFamily: "monospace", whiteSpace: "pre-line" }}>{tip.score_detail}</div>
+            </div>
+          )}
         ) : (
           <div style={{ color: "#fff", fontSize: "15px", fontWeight: "700", marginBottom: "12px" }}>{tip.match}</div>
         )}
