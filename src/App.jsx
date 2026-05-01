@@ -1364,8 +1364,8 @@ export default function App() {
       <div style={{ position: "fixed", bottom: 0, left: "50%", transform: "translateX(-50%)", width: "100%", maxWidth: "480px", background: "#08080a", borderTop: "1px solid #0e0e12", display: "flex", justifyContent: "space-around", padding: "8px 0", zIndex: 20 }}>
         {[
           { id: "home", icon: "🏠", label: "ACCUEIL" },
-          { id: "list", icon: "📋", label: "CONSEILS" },
           { id: "combos", icon: "♾️", label: "COMBINÉS" },
+          { id: "list", icon: "📋", label: "CONSEILS" },
           { id: "stats", icon: "📊", label: "STATS" },
         ].map(tab => (
           <button key={tab.id} onClick={() => navigateTo(tab.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", padding: "6px 14px" }}>
