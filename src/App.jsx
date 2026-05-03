@@ -328,7 +328,7 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
 
   return (
     <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "14px", overflow: "hidden" }}>
-      <div style={{ height: "2px", background: tip.result === "win" ? "linear-gradient(90deg, #66bb6a, #43a047)" : tip.result === "loss" ? "linear-gradient(90deg, #ef5350, #e53935)" : `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD})` }} />
+      <div style={{ height: "2px", background: tip.result === "win" ? "linear-gradient(90deg, #66bb6a, #43a047)" : tip.result === "loss" ? "linear-gradient(90deg, #ef5350, #e53935)" : tip.result === "void" ? "linear-gradient(90deg, #444, #666)" : `linear-gradient(90deg, ${GOLD_DARK}, ${GOLD})` }} />
       <div style={{ padding: "14px 16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -391,6 +391,7 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
               <div style={{ display: "flex", gap: "6px" }}>
                 <button onClick={() => onToggleResult(tip.id, "win")} style={{ background: tip.result === "win" ? "#66bb6a22" : "none", border: `1px solid ${tip.result === "win" ? "#66bb6a" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "win" ? "#66bb6a" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>WIN</button>
                 <button onClick={() => onToggleResult(tip.id, "loss")} style={{ background: tip.result === "loss" ? "#ef535022" : "none", border: `1px solid ${tip.result === "loss" ? "#ef5350" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "loss" ? "#ef5350" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>LOSS</button>
+                <button onClick={() => onToggleResult(tip.id, "void")} style={{ background: tip.result === "void" ? "#44444422" : "none", border: `1px solid ${tip.result === "void" ? "#666" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: tip.result === "void" ? "#666" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>VOID</button>
               </div>
               {tip.result && (
                 <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -413,8 +414,8 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
             </div>
           ) : (
             tip.result && (
-              <div style={{ background: tip.result === "win" ? "#66bb6a18" : "#ef535018", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "4px 12px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace" }}>
-                {tip.result === "win" ? "✓ WIN" : "✗ LOSS"}
+              <div style={{ background: tip.result === "win" ? "#66bb6a18" : tip.result === "loss" ? "#ef535018" : "#33333322", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : tip.result === "loss" ? "#ef535044" : "#44444444"}`, borderRadius: "6px", padding: "4px 12px", color: tip.result === "win" ? "#66bb6a" : tip.result === "loss" ? "#ef5350" : "#666", fontSize: "11px", fontFamily: "monospace" }}>
+                {tip.result === "win" ? "✓ WIN" : tip.result === "loss" ? "✗ LOSS" : "- VOID"}
               </div>
             )
           )}
@@ -1279,7 +1280,7 @@ export default function App() {
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {combos.filter(c => c.sport === comboSport || (!c.sport && comboSport === "football")).map(combo => (
                 <div key={combo.id} style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "14px", overflow: "hidden" }}>
-                  <div style={{ height: "2px", background: combo.result === "win" ? "linear-gradient(90deg, #66bb6a, #43a047)" : combo.result === "loss" ? "linear-gradient(90deg, #ef5350, #e53935)" : "linear-gradient(90deg, #7c3aed, #a78bfa)" }} />
+                  <div style={{ height: "2px", background: combo.result === "win" ? "linear-gradient(90deg, #66bb6a, #43a047)" : combo.result === "loss" ? "linear-gradient(90deg, #ef5350, #e53935)" : combo.result === "void" ? "linear-gradient(90deg, #444, #666)" : "linear-gradient(90deg, #7c3aed, #a78bfa)" }} />
                   <div style={{ padding: "16px 18px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -1314,9 +1315,10 @@ export default function App() {
                         <div style={{ display: "flex", gap: "6px" }}>
                           <button onClick={() => handleToggleComboResult(combo.id, "win")} style={{ background: combo.result === "win" ? "#66bb6a22" : "none", border: `1px solid ${combo.result === "win" ? "#66bb6a" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: combo.result === "win" ? "#66bb6a" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>WIN</button>
                           <button onClick={() => handleToggleComboResult(combo.id, "loss")} style={{ background: combo.result === "loss" ? "#ef535022" : "none", border: `1px solid ${combo.result === "loss" ? "#ef5350" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: combo.result === "loss" ? "#ef5350" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>LOSS</button>
+                          <button onClick={() => handleToggleComboResult(combo.id, "void")} style={{ background: combo.result === "void" ? "#44444422" : "none", border: `1px solid ${combo.result === "void" ? "#666" : "#1e1e28"}`, borderRadius: "6px", padding: "4px 10px", color: combo.result === "void" ? "#666" : "#333", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>VOID</button>
                         </div>
                       ) : (
-                        combo.result && <div style={{ background: combo.result === "win" ? "#66bb6a18" : "#ef535018", border: `1px solid ${combo.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "4px 12px", color: combo.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace" }}>{combo.result === "win" ? "✓ WIN" : "✗ LOSS"}</div>
+                        combo.result && <div style={{ background: combo.result === "win" ? "#66bb6a18" : combo.result === "loss" ? "#ef535018" : "#33333322", border: `1px solid ${combo.result === "win" ? "#66bb6a44" : combo.result === "loss" ? "#ef535044" : "#44444444"}`, borderRadius: "6px", padding: "4px 12px", color: combo.result === "win" ? "#66bb6a" : combo.result === "loss" ? "#ef5350" : "#666", fontSize: "11px", fontFamily: "monospace" }}>{combo.result === "win" ? "✓ WIN" : combo.result === "loss" ? "✗ LOSS" : "- VOID"}</div>
                       )}
                     </div>
                   </div>
