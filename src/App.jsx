@@ -455,16 +455,16 @@ function HomeView({ tips, onLogoTap, loading }) {
         </div>
       </div>
       <div style={{ padding: "24px 20px" }}>
-        {tips.filter(t => t.result).length > 0 && (
+        {tips.filter(t => t.result && t.result !== "void").length > 0 && (
           <div style={{ marginBottom: "56px" }}>
             <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "8px" }}>DERNIERS RÉSULTATS</div>
             <div style={{ display: "flex", gap: "6px" }}>
-              {tips.filter(t => t.result).slice(0, 5).map((t, i) => (
+              {tips.filter(t => t.result && t.result !== "void").slice(0, 5).map((t, i) => (
                 <div key={i} style={{ flex: 1, height: "36px", borderRadius: "10px", background: t.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${t.result === "win" ? "#66bb6a44" : "#ef535044"}`, display: "flex", alignItems: "center", justifyContent: "center", color: t.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>
                   {t.result === "win" ? "W" : "L"}
                 </div>
               ))}
-              {Array(Math.max(0, 5 - tips.filter(t => t.result).length)).fill(0).map((_, i) => (
+              {Array(Math.max(0, 5 - tips.filter(t => t.result && t.result !== "void").length)).fill(0).map((_, i) => (
                 <div key={i} style={{ flex: 1, height: "36px", borderRadius: "10px", background: "#0e0e12", border: "1px solid #1a1a22" }} />
               ))}
             </div>
@@ -490,14 +490,15 @@ function StatsView({ tips, combos, loading }) {
   const wins = tips.filter(t => t.result === "win").length;
   const losses = tips.filter(t => t.result === "loss").length;
   const rate = (wins + losses) > 0 ? Math.round((wins / (wins + losses)) * 100) : null;
-  const resolved = [...tips].filter(t => t.result).reverse();
+  const resolved = [...tips].filter(t => t.result && t.result !== "void").reverse();
   let streak = 0, streakType = null;
   for (const t of resolved) {
     if (streakType === null) { streakType = t.result; streak = 1; }
     else if (t.result === streakType) streak++;
     else break;
   }
-  const pending = total - wins - losses;
+  const voids = tips.filter(t => t.result === "void").length;
+  const pending = total - wins - losses - voids;
   const bySport = SPORTS.map(s => {
     const st = tips.filter(t => t.sport === s.id);
     const sw = st.filter(t => t.result === "win").length;
@@ -591,9 +592,9 @@ function StatsView({ tips, combos, loading }) {
       {resolved.length >= 2 && (() => {
         const points = [];
         let w = 0, l = 0;
-        const chronological = [...tips].filter(t => t.result).reverse();
+        const chronological = [...tips].filter(t => t.result && t.result !== "void").reverse();
         chronological.forEach((t, i) => {
-          if (t.result === "win") w++; else l++;
+          if (t.result === "win") w++; else if (t.result === "loss") l++;
           points.push({ x: i, y: Math.round(w / (w + l) * 100), result: t.result });
         });
         const n = points.length;
