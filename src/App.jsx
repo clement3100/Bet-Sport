@@ -353,7 +353,7 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
             </div>
             <div style={{ flexShrink: 0, textAlign: "center", minWidth: "70px" }}>
               {tip.result && tip.score ? (
-                <div style={{ background: tip.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : "#ef535044"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "13px", fontFamily: "monospace", fontWeight: "900", textAlign: "center" }}>{tip.score}</div>
+                <div style={{ background: tip.result === "win" ? "#66bb6a22" : tip.result === "loss" ? "#ef535022" : "#33333322", border: `1px solid ${tip.result === "win" ? "#66bb6a44" : tip.result === "loss" ? "#ef535044" : "#44444444"}`, borderRadius: "8px", padding: "3px 8px", color: tip.result === "win" ? "#66bb6a" : tip.result === "loss" ? "#ef5350" : "#666", fontSize: "13px", fontFamily: "monospace", fontWeight: "900", textAlign: "center" }}>{tip.score}</div>
               ) : tip.time ? (
                 <div style={{ color: "#888", fontSize: "12px", fontFamily: "monospace", background: BG3, borderRadius: "6px", padding: "3px 8px" }}>{tip.time}</div>
               ) : (
