@@ -455,16 +455,16 @@ function HomeView({ tips, onLogoTap, loading }) {
         </div>
       </div>
       <div style={{ padding: "24px 20px" }}>
-        {tips.filter(t => t.result && t.result !== "void").length > 0 && (
+        {tips.filter(t => t.result).length > 0 && (
           <div style={{ marginBottom: "56px" }}>
             <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "8px" }}>DERNIERS RÉSULTATS</div>
             <div style={{ display: "flex", gap: "6px" }}>
-              {tips.filter(t => t.result && t.result !== "void").slice(0, 5).map((t, i) => (
-                <div key={i} style={{ flex: 1, height: "36px", borderRadius: "10px", background: t.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${t.result === "win" ? "#66bb6a44" : "#ef535044"}`, display: "flex", alignItems: "center", justifyContent: "center", color: t.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>
-                  {t.result === "win" ? "W" : "L"}
+              {tips.filter(t => t.result).slice(0, 5).map((t, i) => (
+                <div key={i} style={{ flex: 1, height: "36px", borderRadius: "10px", background: t.result === "win" ? "#66bb6a22" : t.result === "void" ? "#33333322" : "#ef535022", border: `1px solid ${t.result === "win" ? "#66bb6a44" : t.result === "void" ? "#44444444" : "#ef535044"}`, display: "flex", alignItems: "center", justifyContent: "center", color: t.result === "win" ? "#66bb6a" : t.result === "void" ? "#666" : "#ef5350", fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>
+                  {t.result === "win" ? "W" : t.result === "void" ? "V" : "L"}
                 </div>
               ))}
-              {Array(Math.max(0, 5 - tips.filter(t => t.result && t.result !== "void").length)).fill(0).map((_, i) => (
+              {Array(Math.max(0, 5 - tips.filter(t => t.result).length)).fill(0).map((_, i) => (
                 <div key={i} style={{ flex: 1, height: "36px", borderRadius: "10px", background: "#0e0e12", border: "1px solid #1a1a22" }} />
               ))}
             </div>
@@ -577,8 +577,8 @@ function StatsView({ tips, combos, loading }) {
           <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>5 DERNIERS RÉSULTATS</div>
           <div style={{ display: "flex", gap: "8px" }}>
             {last5.map((t, i) => (
-              <div key={i} style={{ flex: 1, height: "32px", borderRadius: "8px", background: t.result === "win" ? "#66bb6a22" : "#ef535022", border: `1px solid ${t.result === "win" ? "#66bb6a44" : "#ef535044"}`, display: "flex", alignItems: "center", justifyContent: "center", color: t.result === "win" ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", fontWeight: "700" }}>
-                {t.result === "win" ? "W" : "L"}
+              <div key={i} style={{ flex: 1, height: "32px", borderRadius: "8px", background: t.result === "win" ? "#66bb6a22" : t.result === "void" ? "#33333322" : "#ef535022", border: `1px solid ${t.result === "win" ? "#66bb6a44" : t.result === "void" ? "#44444444" : "#ef535044"}`, display: "flex", alignItems: "center", justifyContent: "center", color: t.result === "win" ? "#66bb6a" : t.result === "void" ? "#666" : "#ef5350", fontSize: "11px", fontFamily: "monospace", fontWeight: "700" }}>
+                {t.result === "win" ? "W" : t.result === "void" ? "V" : "L"}
               </div>
             ))}
             {Array(5 - last5.length).fill(0).map((_, i) => (
@@ -592,10 +592,12 @@ function StatsView({ tips, combos, loading }) {
       {resolved.length >= 2 && (() => {
         const points = [];
         let w = 0, l = 0;
-        const chronological = [...tips].filter(t => t.result && t.result !== "void").reverse();
+        const chronological = [...tips].filter(t => t.result).reverse();
         chronological.forEach((t, i) => {
-          if (t.result === "win") w++; else if (t.result === "loss") l++;
-          points.push({ x: i, y: Math.round(w / (w + l) * 100), result: t.result });
+          if (t.result === "win") w++;
+          else if (t.result === "loss") l++;
+          const pct = (w + l) > 0 ? Math.round(w / (w + l) * 100) : 50;
+          points.push({ x: i, y: pct, result: t.result });
         });
         const n = points.length;
         const W = 300, H = 100;
@@ -625,7 +627,9 @@ function StatsView({ tips, combos, loading }) {
               <path d={`${pathD} L ${(n-1) * xScale} ${H} L 0 ${H} Z`} fill="url(#curveGrad)" />
               <path d={pathD} fill="none" stroke={lineColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               {points.map((p, i) => (
-                <circle key={i} cx={i * xScale} cy={H - (p.y / 100) * H} r="3" fill={p.result === "win" ? "#66bb6a" : "#ef5350"} stroke={BG2} strokeWidth="1.5" />
+                <circle key={i} cx={i * xScale} cy={H - (p.y / 100) * H} r="3"
+                  fill={p.result === "win" ? "#66bb6a" : p.result === "void" ? "#666" : "#ef5350"}
+                  stroke={BG2} strokeWidth="1.5" />
               ))}
             </svg>
             <div style={{ display: "flex", justifyContent: "space-between", marginTop: "6px" }}>
