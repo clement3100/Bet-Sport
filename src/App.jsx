@@ -486,26 +486,34 @@ function HomeView({ tips, onLogoTap, loading }) {
 
 function StatsView({ tips, combos, loading }) {
   const [openLeagueStat, setOpenLeagueStat] = useState(null);
-  const total = tips.length;
-  const wins = tips.filter(t => t.result === "win").length;
-  const losses = tips.filter(t => t.result === "loss").length;
+
+  // Calcul des séries disponibles
+  const allSeries = [...new Set(tips.map(t => t.serie || 1))].sort((a, b) => a - b);
+  const currentSerie = allSeries.length > 0 ? Math.max(...allSeries) : 1;
+  const [selectedSerie, setSelectedSerie] = useState(null); // null = série en cours
+
+  const activeSerie = selectedSerie ?? currentSerie;
+  const serieTips = tips.filter(t => (t.serie || 1) === activeSerie);
+  const total = serieTips.length;
+  const wins = serieTips.filter(t => t.result === "win").length;
+  const losses = serieTips.filter(t => t.result === "loss").length;
   const rate = (wins + losses) > 0 ? Math.round((wins / (wins + losses)) * 100) : null;
-  const resolved = [...tips].filter(t => t.result && t.result !== "void").reverse();
+  const resolved = [...serieTips].filter(t => t.result && t.result !== "void").reverse();
   let streak = 0, streakType = null;
   for (const t of resolved) {
     if (streakType === null) { streakType = t.result; streak = 1; }
     else if (t.result === streakType) streak++;
     else break;
   }
-  const voids = tips.filter(t => t.result === "void").length;
+  const voids = serieTips.filter(t => t.result === "void").length;
   const pending = total - wins - losses - voids;
   const bySport = SPORTS.map(s => {
-    const st = tips.filter(t => t.sport === s.id);
+    const st = serieTips.filter(t => t.sport === s.id);
     const sw = st.filter(t => t.result === "win").length;
     const sl = st.filter(t => t.result === "loss").length;
     return { ...s, wins: sw, losses: sl, rate: (sw+sl) > 0 ? Math.round(sw/(sw+sl)*100) : null };
   });
-  const last5 = tips.filter(t => t.result).slice(0, 5);
+  const last5 = serieTips.filter(t => t.result).slice(0, 5);
   const comboWins = combos.filter(c => c.result === "win").length;
   const comboLosses = combos.filter(c => c.result === "loss").length;
   const comboRate = (comboWins + comboLosses) > 0 ? `${Math.round(comboWins / (comboWins + comboLosses) * 100)}%` : "—";
@@ -520,10 +528,22 @@ function StatsView({ tips, combos, loading }) {
 
   return (
     <div style={{ padding: "20px 20px 40px" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
         <div style={{ width: "3px", height: "24px", background: `linear-gradient(${GOLD}, ${GOLD_DARK})`, borderRadius: "2px" }} />
         <h2 style={{ margin: 0, fontSize: "17px", fontWeight: "700", color: "#fff" }}>Statistiques</h2>
       </div>
+
+      {/* Sélecteur de série */}
+      {allSeries.length > 0 && (
+        <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "20px" }}>
+          {allSeries.map(s => (
+            <button key={s} onClick={() => setSelectedSerie(s === currentSerie ? null : s)}
+              style={{ background: activeSerie === s ? `${GOLD}22` : "none", border: `1px solid ${activeSerie === s ? GOLD : "#1e1e28"}`, borderRadius: "20px", padding: "5px 12px", color: activeSerie === s ? GOLD : "#444", fontSize: "11px", cursor: "pointer", fontFamily: "monospace" }}>
+              {s === currentSerie ? `✦ Série ${s}` : `Série ${s}`}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Cercle + stats principales */}
       <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "16px", padding: "20px", display: "flex", alignItems: "center", gap: "20px", marginBottom: "16px" }}>
@@ -592,7 +612,7 @@ function StatsView({ tips, combos, loading }) {
       {resolved.length >= 2 && (() => {
         const points = [];
         let w = 0, l = 0;
-        const chronological = [...tips].filter(t => t.result).reverse();
+        const chronological = [...serieTips].filter(t => t.result).reverse();
         chronological.forEach((t, i) => {
           if (t.result === "win") w++;
           else if (t.result === "loss") l++;
@@ -675,7 +695,7 @@ function StatsView({ tips, combos, loading }) {
         {openLeagueStat === "section" && (
           <div className="accordion-content" style={{ background: BG2, border: `1px solid ${GOLD}44`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "12px" }}>
             {ALL_LEAGUES.map(league => {
-              const lt = tips.filter(t => t.league === league.id);
+              const lt = serieTips.filter(t => t.league === league.id);
               const lw = lt.filter(t => t.result === "win").length;
               const ll = lt.filter(t => t.result === "loss").length;
               const lr = (lw+ll) > 0 ? Math.round(lw/(lw+ll)*100) : null;
@@ -707,7 +727,7 @@ function StatsView({ tips, combos, loading }) {
       <div style={{ marginTop: "14px" }}>
         <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>PAR CONFIANCE</div>
         {[5,4,3,2,1].map(c => {
-          const ct = tips.filter(t => t.confidence === c);
+          const ct = serieTips.filter(t => t.confidence === c);
           const cw = ct.filter(t => t.result === "win").length;
           const cl = ct.filter(t => t.result === "loss").length;
           const cr = (cw+cl) > 0 ? Math.round(cw/(cw+cl)*100) : null;
@@ -819,15 +839,25 @@ export default function App() {
 
   const handleAdminLogout = async () => { await supabase.auth.signOut(); setIsAdmin(false); };
 
+  const getCurrentSerie = () => {
+    const resolved = tips.filter(t => t.result);
+    const maxSerie = resolved.length > 0 ? Math.max(...resolved.map(t => t.serie || 1)) : 1;
+    const resolvedInCurrentSerie = resolved.filter(t => (t.serie || 1) === maxSerie).length;
+    if (resolvedInCurrentSerie >= 100) return maxSerie + 1;
+    return maxSerie;
+  };
+
   const handleAdd = async () => {
     if (!form.match || form.confidence === 0) return;
     setSaving(true);
     const betLabel = form.bet === "Personnalisé" ? form.customBet : form.bet;
+    const currentSerie = getCurrentSerie();
     const { data } = await supabase.from("tips").insert([{
       sport: form.sport, league: form.league, match: form.match,
       bet: betLabel, odds: form.odds, confidence: form.confidence,
       note: form.note, date: form.date, time: form.time,
       flag1: form.flag1, flag2: form.flag2, result: null,
+      serie: currentSerie,
     }]).select();
     if (data) {
       setTips([data[0], ...tips]);
@@ -895,11 +925,25 @@ export default function App() {
     return true;
   });
 
-  const TipList = ({ items }) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-      {items.map(tip => <TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />)}
-    </div>
-  );
+  const TipList = ({ items }) => {
+    const result = [];
+    let lastSerie = null;
+    items.forEach((tip, i) => {
+      const tipSerie = tip.serie || 1;
+      if (lastSerie !== null && tipSerie !== lastSerie) {
+        result.push(
+          <div key={`sep-${i}`} style={{ display: "flex", alignItems: "center", gap: "10px", margin: "8px 0" }}>
+            <div style={{ flex: 1, height: "1px", background: `linear-gradient(90deg, transparent, ${GOLD}55)` }} />
+            <div style={{ color: GOLD, fontSize: "9px", fontFamily: "monospace", letterSpacing: "2px", background: `${GOLD}11`, border: `1px solid ${GOLD}33`, borderRadius: "10px", padding: "3px 10px" }}>FIN DE LA SÉRIE {lastSerie}</div>
+            <div style={{ flex: 1, height: "1px", background: `linear-gradient(90deg, ${GOLD}55, transparent)` }} />
+          </div>
+        );
+      }
+      lastSerie = tipSerie;
+      result.push(<TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />);
+    });
+    return <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>{result}</div>;
+  };
 
   return (
     <div style={{ minHeight: "100vh", background: BG, color: "#fff", fontFamily: "'Segoe UI', system-ui, sans-serif", maxWidth: "480px", margin: "0 auto", paddingBottom: "80px", overflow: "hidden" }}>
