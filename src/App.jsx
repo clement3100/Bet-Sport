@@ -229,6 +229,8 @@ const ALL_TENNIS = [...TENNIS_TOURS, ...TENNIS_SLAMS];
 
 const BET_TYPES = ["1", "N", "2", "1/N", "1/2", "N/2", "Plus de 2.5", "Moins de 2.5", "BTTS Oui", "BTTS Non", "Personnalisé"];
 
+const NBA_STAT_TYPES = ["Points", "Rebonds", "Passes", "3 points", "Points+Rebonds", "Points+Passes", "Rebonds+Passes", "Points+Rebonds+Passes", "Steals", "Blocks"];
+
 const CONFIDENCE_CONFIG = {
   1: { color: "#444455", label: "Très risqué" },
   2: { color: "#ef5350", label: "Risqué" },
@@ -319,7 +321,7 @@ function MiniBar({ wins, losses, total, color }) {
   );
 }
 
-function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
+function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, onUpdatePlayerStats, isAdmin }) {
   const sport = SPORTS.find(s => s.id === tip.sport) || SPORTS[0];
   const conf = CONFIDENCE_CONFIG[tip.confidence] || CONFIDENCE_CONFIG[3];
   const league = ALL_LEAGUES.find(l => l.id === tip.league);
@@ -380,6 +382,48 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, isAdmin }) {
         </div>
 
         {tip.note && <div style={{ color: "#555", fontSize: "12px", fontStyle: "italic", marginBottom: "10px" }}>{tip.note}</div>}
+
+        {/* Barres de stats joueurs NBA */}
+        {tip.sport === "nba" && tip.player_stats && tip.player_stats.length > 0 && (
+          <div style={{ marginBottom: "10px" }}>
+            {tip.player_stats.map((ps, i) => {
+              const target = parseFloat(ps.target) || 0;
+              const actual = parseFloat(ps.actual) || 0;
+              const pct = target > 0 && actual > 0 ? Math.min((actual / (target * 2)) * 100, 100) : 0;
+              const passed = actual > target;
+              const barColor = actual > 0 ? (passed ? "#66bb6a" : "#ef5350") : "#1a1a22";
+              return (
+                <div key={i} style={{ marginBottom: "10px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                    <div>
+                      <span style={{ color: "#ccc", fontSize: "11px", fontWeight: "600" }}>{ps.player}</span>
+                      <span style={{ color: "#555", fontSize: "10px", fontFamily: "monospace" }}> · {ps.stat} · +{ps.target}</span>
+                    </div>
+                    {isAdmin ? (
+                      <input value={ps.actual || ""} onChange={e => {
+                        const updated = [...tip.player_stats];
+                        updated[i] = { ...updated[i], actual: e.target.value };
+                        onUpdatePlayerStats(tip.id, updated);
+                      }} placeholder="Résultat"
+                        style={{ background: BG3, border: `1px solid ${actual > 0 ? (passed ? "#66bb6a44" : "#ef535044") : "#1e1e28"}`, borderRadius: "6px", padding: "3px 8px", color: actual > 0 ? (passed ? "#66bb6a" : "#ef5350") : "#fff", fontSize: "11px", fontFamily: "monospace", width: "70px", outline: "none", textAlign: "center" }} />
+                    ) : actual > 0 ? (
+                      <span style={{ background: passed ? "#66bb6a22" : "#ef535022", border: `1px solid ${passed ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "2px 8px", color: passed ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", fontWeight: "700" }}>{actual}</span>
+                    ) : null}
+                  </div>
+                  <div style={{ height: "5px", background: "#1a1a22", borderRadius: "4px", overflow: "hidden", position: "relative" }}>
+                    <div style={{ position: "absolute", left: "50%", top: 0, width: "1px", height: "100%", background: "#333" }} />
+                    <div style={{ height: "100%", width: `${pct}%`, background: barColor, borderRadius: "4px", transition: "width 0.5s ease" }} />
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2px" }}>
+                    <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>0</span>
+                    <span style={{ color: "#555", fontSize: "9px", fontFamily: "monospace" }}>{target}</span>
+                    <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>{target * 2}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
         <GoldDivider />
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "10px" }}>
@@ -778,6 +822,7 @@ export default function App() {
   const [form, setForm] = useState({
     sport: "football", match: "", bet: "1", customBet: "", odds: "",
     confidence: 0, note: "", time: "", league: null, flag1: "", flag2: "",
+    player_stats: [],
     date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }),
   });
 
@@ -857,11 +902,11 @@ export default function App() {
       bet: betLabel, odds: form.odds, confidence: form.confidence,
       note: form.note, date: form.date, time: form.time,
       flag1: form.flag1, flag2: form.flag2, result: null,
-      serie: currentSerie,
+      serie: currentSerie, player_stats: form.player_stats.length > 0 ? form.player_stats : null,
     }]).select();
     if (data) {
       setTips([data[0], ...tips]);
-      setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", time: "", league: null, flag1: "", flag2: "", date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
+      setForm({ sport: "football", match: "", bet: "1", customBet: "", odds: "", confidence: 0, note: "", time: "", league: null, flag1: "", flag2: "", player_stats: [], date: new Date().toLocaleDateString("fr-FR", { timeZone: "Europe/Paris" }) });
       navigateTo("list");
     }
     setSaving(false);
@@ -884,6 +929,11 @@ export default function App() {
     if (score_detail !== undefined) updateData.score_detail = score_detail;
     await supabase.from("tips").update(updateData).eq("id", id);
     setTips(tips.map(t => t.id === id ? { ...t, ...updateData } : t));
+  };
+
+  const handleUpdatePlayerStats = async (id, player_stats) => {
+    await supabase.from("tips").update({ player_stats }).eq("id", id);
+    setTips(tips.map(t => t.id === id ? { ...t, player_stats } : t));
   };
 
   const handleAddCombo = async () => {
@@ -940,7 +990,7 @@ export default function App() {
         );
       }
       lastSerie = tipSerie;
-      result.push(<TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} />);
+      result.push(<TipCard key={tip.id} tip={tip} isAdmin={isAdmin} onDelete={handleDelete} onToggleResult={handleToggleResult} onUpdateScore={handleUpdateScore} onUpdatePlayerStats={handleUpdatePlayerStats} />);
     });
     return <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>{result}</div>;
   };
@@ -1238,6 +1288,37 @@ export default function App() {
             <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>NOTE (optionnel)</div>
             <textarea value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} placeholder="Analyse, contexte..." style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }} />
           </div>
+
+          {form.sport === "nba" && (
+            <div style={{ marginBottom: "28px" }}>
+              <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>STATS JOUEURS (optionnel)</div>
+              {(form.player_stats || []).map((ps, i) => (
+                <div key={i} style={{ background: BG3, borderRadius: "10px", padding: "12px", marginBottom: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                    <span style={{ color: "#888", fontSize: "10px", fontFamily: "monospace" }}>JOUEUR {i + 1}</span>
+                    <button onClick={() => { const s = [...form.player_stats]; s.splice(i, 1); setForm({ ...form, player_stats: s }); }}
+                      style={{ background: "none", border: "none", color: "#333", cursor: "pointer", fontSize: "14px" }}
+                      onMouseEnter={e => e.target.style.color = "#ef5350"}
+                      onMouseLeave={e => e.target.style.color = "#333"}>✕</button>
+                  </div>
+                  <input value={ps.player} onChange={e => { const s = [...form.player_stats]; s[i].player = e.target.value; setForm({ ...form, player_stats: s }); }}
+                    placeholder="Nom du joueur" style={{ ...inputStyle, marginBottom: "6px", fontSize: "13px" }} />
+                  <div style={{ display: "flex", gap: "6px" }}>
+                    <select value={ps.stat} onChange={e => { const s = [...form.player_stats]; s[i].stat = e.target.value; setForm({ ...form, player_stats: s }); }}
+                      style={{ ...inputStyle, cursor: "pointer", fontSize: "12px", flex: 1 }}>
+                      {NBA_STAT_TYPES.map(st => <option key={st} value={st}>{st}</option>)}
+                    </select>
+                    <input value={ps.target} onChange={e => { const s = [...form.player_stats]; s[i].target = e.target.value; setForm({ ...form, player_stats: s }); }}
+                      placeholder="Palier" style={{ ...inputStyle, fontSize: "13px", width: "80px" }} type="number" step="0.5" />
+                  </div>
+                </div>
+              ))}
+              <button onClick={() => setForm({ ...form, player_stats: [...(form.player_stats || []), { player: "", stat: "Points", target: "" }] })}
+                style={{ width: "100%", padding: "10px", background: "none", border: "1px dashed #333", borderRadius: "8px", color: "#444", fontSize: "12px", cursor: "pointer", fontFamily: "monospace" }}>
+                + Ajouter un joueur
+              </button>
+            </div>
+          )}
           <button onClick={handleAdd} disabled={!form.match || form.confidence === 0 || saving}
             style={{ width: "100%", padding: "15px", background: (!form.match || form.confidence === 0 || saving) ? "#1a1a22" : `linear-gradient(135deg, ${GOLD_DARK}, ${GOLD})`, border: "none", borderRadius: "12px", color: (!form.match || form.confidence === 0 || saving) ? "#333" : "#000", fontSize: "15px", fontWeight: "800", cursor: (!form.match || form.confidence === 0 || saving) ? "not-allowed" : "pointer", fontFamily: "monospace", letterSpacing: "2px" }}>
             {saving ? "ENREGISTREMENT..." : "PUBLIER LE PRONOSTIC"}
