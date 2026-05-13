@@ -383,8 +383,11 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, onUpdatePlayerS
           </div>
         )}
         {tip.sport === "nba" && tip.player_stats?.length > 0 && tip.odds && (
-          <div style={{ marginBottom: "10px" }}>
-            <div style={{ display: "inline-block", background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>Cote globale : {tip.odds}</div>
+          <div style={{ marginBottom: "14px" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: `${GOLD}15`, border: `1px solid ${GOLD}44`, borderRadius: "8px", padding: "6px 14px" }}>
+              <span style={{ color: "#888", fontSize: "10px", fontFamily: "monospace", letterSpacing: "1px" }}>COTE GLOBALE</span>
+              <span style={{ color: GOLD, fontSize: "18px", fontWeight: "900", fontFamily: "monospace" }}>{tip.odds}</span>
+            </div>
           </div>
         )}
 
@@ -393,42 +396,58 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, onUpdatePlayerS
         {/* Barres de stats joueurs NBA */}
         {tip.sport === "nba" && tip.player_stats && tip.player_stats.length > 0 && (
           <div style={{ marginBottom: "10px" }}>
-            {tip.player_stats.map((ps, i) => {
-              const target = parseFloat(ps.target) || 0;
-              const actual = parseFloat(ps.actual) || 0;
-              const pct = target > 0 && actual > 0 ? Math.min((actual / (target * 2)) * 100, 100) : 0;
-              const passed = actual > target;
-              const barColor = actual > 0 ? (passed ? "#66bb6a" : "#ef5350") : "#1a1a22";
-              return (
-                <div key={i} style={{ marginBottom: "10px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
-                    <div>
-                      <span style={{ color: "#ccc", fontSize: "11px", fontWeight: "600" }}>{ps.player}</span>
-                      <span style={{ color: "#555", fontSize: "10px", fontFamily: "monospace" }}> · {ps.stat} · +{ps.target}</span>
-                    </div>
-                    {isAdmin ? (
-                      <input value={ps.actual || ""} onChange={e => {
-                        const updated = [...tip.player_stats];
-                        updated[i] = { ...updated[i], actual: e.target.value };
-                        onUpdatePlayerStats(tip.id, updated);
-                      }} placeholder="Résultat"
-                        style={{ background: BG3, border: `1px solid ${actual > 0 ? (passed ? "#66bb6a44" : "#ef535044") : "#1e1e28"}`, borderRadius: "6px", padding: "3px 8px", color: actual > 0 ? (passed ? "#66bb6a" : "#ef5350") : "#fff", fontSize: "11px", fontFamily: "monospace", width: "70px", outline: "none", textAlign: "center" }} />
-                    ) : actual > 0 ? (
-                      <span style={{ background: passed ? "#66bb6a22" : "#ef535022", border: `1px solid ${passed ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "2px 8px", color: passed ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", fontWeight: "700" }}>{actual}</span>
-                    ) : null}
-                  </div>
-                  <div style={{ height: "5px", background: "#1a1a22", borderRadius: "4px", overflow: "hidden", position: "relative" }}>
-                    <div style={{ position: "absolute", left: "50%", top: 0, width: "1px", height: "100%", background: "#333" }} />
-                    <div style={{ height: "100%", width: `${pct}%`, background: barColor, borderRadius: "4px", transition: "width 0.5s ease" }} />
-                  </div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2px" }}>
-                    <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>0</span>
-                    <span style={{ color: "#555", fontSize: "9px", fontFamily: "monospace" }}>{target}</span>
-                    <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>{target * 2}</span>
-                  </div>
+            {(() => {
+              const grouped = [];
+              const seen = {};
+              tip.player_stats.forEach((ps, i) => {
+                const key = (ps.player || "").toLowerCase().trim();
+                if (!seen[key]) { seen[key] = grouped.length; grouped.push({ player: ps.player, stats: [{ ...ps, idx: i }] }); }
+                else { grouped[seen[key]].stats.push({ ...ps, idx: i }); }
+              });
+              return grouped.map((group, gi) => (
+                <div key={gi} style={{ marginBottom: "12px" }}>
+                  {group.stats.map((ps, si) => {
+                    const target = parseFloat(ps.target) || 0;
+                    const actual = parseFloat(ps.actual) || 0;
+                    const pct = target > 0 && actual > 0 ? Math.min((actual / (target * 2)) * 100, 100) : 0;
+                    const passed = actual > target;
+                    const barColor = actual > 0 ? (passed ? "#66bb6a" : "#ef5350") : "#1a1a22";
+                    return (
+                      <div key={si} style={{ marginBottom: "8px", paddingLeft: si > 0 ? "12px" : "0" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                            {si === 0
+                              ? <span style={{ color: "#fff", fontSize: "12px", fontWeight: "700" }}>{ps.player}</span>
+                              : <span style={{ color: "#444", fontSize: "11px" }}>└</span>
+                            }
+                            <span style={{ color: "#555", fontSize: "10px", fontFamily: "monospace" }}>· {ps.stat} · +{ps.target}</span>
+                          </div>
+                          {isAdmin ? (
+                            <input value={ps.actual || ""} onChange={e => {
+                              const updated = [...tip.player_stats];
+                              updated[ps.idx] = { ...updated[ps.idx], actual: e.target.value };
+                              onUpdatePlayerStats(tip.id, updated);
+                            }} placeholder="—"
+                              style={{ background: BG3, border: `1px solid ${actual > 0 ? (passed ? "#66bb6a44" : "#ef535044") : "#1e1e28"}`, borderRadius: "6px", padding: "3px 8px", color: actual > 0 ? (passed ? "#66bb6a" : "#ef5350") : "#fff", fontSize: "11px", fontFamily: "monospace", width: "60px", outline: "none", textAlign: "center" }} />
+                          ) : actual > 0 ? (
+                            <span style={{ background: passed ? "#66bb6a22" : "#ef535022", border: `1px solid ${passed ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "2px 8px", color: passed ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", fontWeight: "700" }}>{actual}</span>
+                          ) : null}
+                        </div>
+                        <div style={{ height: "5px", background: "#1a1a22", borderRadius: "4px", overflow: "hidden", position: "relative" }}>
+                          <div style={{ position: "absolute", left: "50%", top: 0, width: "1px", height: "100%", background: "#333" }} />
+                          <div style={{ height: "100%", width: `${pct}%`, background: barColor, borderRadius: "4px", transition: "width 0.5s ease" }} />
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2px" }}>
+                          <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>0</span>
+                          <span style={{ color: "#555", fontSize: "9px", fontFamily: "monospace" }}>{target}</span>
+                          <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>{target * 2}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              ));
+            })()}
           </div>
         )}
         <GoldDivider />
