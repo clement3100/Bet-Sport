@@ -245,7 +245,28 @@ const inputStyle = {
   fontSize: "15px", outline: "none", boxSizing: "border-box", fontFamily: "inherit",
 };
 
-function parseTeams(matchStr) {
+function getNbaMax(stat, target) {
+  const t = parseFloat(target) || 0;
+  const s = (stat || "").toLowerCase();
+  if (s.includes("3") || s.includes("trois")) return 7;
+  if (s.includes("rebond")) {
+    if (t <= 3) return 7;
+    if (t <= 5) return 10;
+    if (t <= 7) return 15;
+    return 20;
+  }
+  if (s.includes("passe") || s.includes("assist")) {
+    if (t <= 3) return 7;
+    if (t <= 5) return 10;
+    if (t <= 7) return 15;
+    return 20;
+  }
+  // Points (défaut)
+  if (t <= 5) return 20;
+  if (t <= 10) return 30;
+  if (t <= 15) return 40;
+  return 50;
+}
   if (!matchStr) return { home: "", away: "" };
   for (const sep of [" - ", " vs ", " VS "]) {
     if (matchStr.includes(sep)) {
@@ -409,9 +430,11 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, onUpdatePlayerS
                   {group.stats.map((ps, si) => {
                     const target = parseFloat(ps.target) || 0;
                     const actual = parseFloat(ps.actual) || 0;
-                    const pct = target > 0 && actual > 0 ? Math.min((actual / (target * 2)) * 100, 100) : 0;
+                    const maxVal = getNbaMax(ps.stat, target);
+                    const pct = actual > 0 ? Math.min((actual / maxVal) * 100, 100) : 0;
                     const passed = actual > target;
                     const barColor = actual > 0 ? (passed ? "#66bb6a" : "#ef5350") : "#1a1a22";
+                    const markerPct = (target / maxVal) * 100;
                     return (
                       <div key={si} style={{ marginBottom: "8px", paddingLeft: si > 0 ? "12px" : "0" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
@@ -434,13 +457,13 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, onUpdatePlayerS
                           ) : null}
                         </div>
                         <div style={{ height: "5px", background: "#1a1a22", borderRadius: "4px", overflow: "hidden", position: "relative" }}>
-                          <div style={{ position: "absolute", left: "50%", top: 0, width: "1px", height: "100%", background: "#333" }} />
+                          <div style={{ position: "absolute", left: `${markerPct}%`, top: 0, width: "1px", height: "100%", background: "#555" }} />
                           <div style={{ height: "100%", width: `${pct}%`, background: barColor, borderRadius: "4px", transition: "width 0.5s ease" }} />
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "2px" }}>
                           <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>0</span>
                           <span style={{ color: "#555", fontSize: "9px", fontFamily: "monospace" }}>{target}</span>
-                          <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>{target * 2}</span>
+                          <span style={{ color: "#333", fontSize: "9px", fontFamily: "monospace" }}>{maxVal}</span>
                         </div>
                       </div>
                     );
