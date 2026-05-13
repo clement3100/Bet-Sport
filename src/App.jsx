@@ -245,6 +245,17 @@ const inputStyle = {
   fontSize: "15px", outline: "none", boxSizing: "border-box", fontFamily: "inherit",
 };
 
+function parseTeams(matchStr) {
+  if (!matchStr) return { home: "", away: "" };
+  for (const sep of [" - ", " vs ", " VS "]) {
+    if (matchStr.includes(sep)) {
+      const parts = matchStr.split(sep);
+      return { home: parts[0].trim(), away: parts.slice(1).join(sep).trim() };
+    }
+  }
+  return { home: matchStr, away: "" };
+}
+
 function getNbaMax(stat, target) {
   const t = parseFloat(target) || 0;
   const s = (stat || "").toLowerCase();
@@ -450,7 +461,7 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, onUpdatePlayerS
                               const updated = [...tip.player_stats];
                               updated[ps.idx] = { ...updated[ps.idx], actual: e.target.value };
                               onUpdatePlayerStats(tip.id, updated);
-                            }} placeholder="—"
+                            }} placeholder="-"
                               style={{ background: BG3, border: `1px solid ${actual > 0 ? (passed ? "#66bb6a44" : "#ef535044") : "#1e1e28"}`, borderRadius: "6px", padding: "3px 8px", color: actual > 0 ? (passed ? "#66bb6a" : "#ef5350") : "#fff", fontSize: "11px", fontFamily: "monospace", width: "60px", outline: "none", textAlign: "center" }} />
                           ) : actual > 0 ? (
                             <span style={{ background: passed ? "#66bb6a22" : "#ef535022", border: `1px solid ${passed ? "#66bb6a44" : "#ef535044"}`, borderRadius: "6px", padding: "2px 8px", color: passed ? "#66bb6a" : "#ef5350", fontSize: "11px", fontFamily: "monospace", fontWeight: "700" }}>{actual}</span>
@@ -538,7 +549,7 @@ function HomeView({ tips, onLogoTap, loading }) {
           {[
             { label: "CONSEILS", value: loading ? "…" : total, color: "#fff" },
             { label: "GAGNÉS", value: loading ? "…" : wins, color: "#66bb6a" },
-            { label: "RÉUSSITE", value: loading ? "…" : (rate !== null ? `${rate}%` : "—"), color: rate !== null && rate >= 60 ? "#66bb6a" : rate !== null && rate >= 40 ? GOLD : "#ef5350" },
+            { label: "RÉUSSITE", value: loading ? "…" : (rate !== null ? `${rate}%` : "-"), color: rate !== null && rate >= 60 ? "#66bb6a" : rate !== null && rate >= 40 ? GOLD : "#ef5350" },
           ].map(s => (
             <div key={s.label} style={{ background: "#0b0a07", padding: "20px 8px", textAlign: "center" }}>
               <div style={{ color: s.color, fontSize: "28px", fontWeight: "900", fontFamily: "monospace" }}>{s.value}</div>
@@ -609,7 +620,7 @@ function StatsView({ tips, combos, loading }) {
   const last5 = serieTips.filter(t => t.result).slice(0, 5);
   const comboWins = combos.filter(c => c.result === "win").length;
   const comboLosses = combos.filter(c => c.result === "loss").length;
-  const comboRate = (comboWins + comboLosses) > 0 ? `${Math.round(comboWins / (comboWins + comboLosses) * 100)}%` : "—";
+  const comboRate = (comboWins + comboLosses) > 0 ? `${Math.round(comboWins / (comboWins + comboLosses) * 100)}%` : "-";
 
   if (loading) return <LoadingSpinner />;
   if (total === 0) return (
@@ -643,7 +654,7 @@ function StatsView({ tips, combos, loading }) {
         <div style={{ position: "relative", flexShrink: 0 }}>
           <RadialProgress value={rate ?? 0} size={90} stroke={8} color={rate >= 60 ? "#66bb6a" : rate >= 40 ? GOLD : "#ef5350"} />
           <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", textAlign: "center" }}>
-            <div style={{ color: "#fff", fontFamily: "monospace", fontWeight: "900", fontSize: "16px" }}>{rate ?? "—"}{rate !== null ? "%" : ""}</div>
+            <div style={{ color: "#fff", fontFamily: "monospace", fontWeight: "900", fontSize: "16px" }}>{rate ?? "-"}{rate !== null ? "%" : ""}</div>
             <div style={{ color: "#888", fontSize: "8px", fontFamily: "monospace" }}>WIN</div>
           </div>
         </div>
@@ -669,7 +680,7 @@ function StatsView({ tips, combos, loading }) {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "16px" }}>
         <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "12px", padding: "16px" }}>
           <div style={{ fontSize: "22px", marginBottom: "4px" }}>{streakType === "win" ? "🔥" : streakType === "loss" ? "❄️" : "➖"}</div>
-          <div style={{ color: streakType === "win" ? "#66bb6a" : streakType === "loss" ? "#ef5350" : "#888", fontFamily: "monospace", fontSize: "18px", fontWeight: "900" }}>{streak > 0 ? `${streak} ${streakType === "win" ? "W" : "L"}` : "—"}</div>
+          <div style={{ color: streakType === "win" ? "#66bb6a" : streakType === "loss" ? "#ef5350" : "#888", fontFamily: "monospace", fontSize: "18px", fontWeight: "900" }}>{streak > 0 ? `${streak} ${streakType === "win" ? "W" : "L"}` : "-"}</div>
           <div style={{ color: "#888", fontSize: "9px", fontFamily: "monospace", marginTop: "2px" }}>SÉRIE EN COURS</div>
         </div>
         <div style={{ background: BG2, border: "1px solid #1a1a22", borderRadius: "12px", padding: "16px" }}>
@@ -768,7 +779,7 @@ function StatsView({ tips, combos, loading }) {
               <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace" }}>
                 <span style={{ color: "#66bb6a" }}>{s.wins}W</span>
                 <span style={{ color: "#ef5350" }}>{s.losses}L</span>
-                <span style={{ color: s.rate !== null ? (s.rate >= 60 ? "#66bb6a" : s.rate >= 40 ? GOLD : "#ef5350") : "#888" }}>{s.rate !== null ? `${s.rate}%` : "—"}</span>
+                <span style={{ color: s.rate !== null ? (s.rate >= 60 ? "#66bb6a" : s.rate >= 40 ? GOLD : "#ef5350") : "#888" }}>{s.rate !== null ? `${s.rate}%` : "-"}</span>
               </div>
             </div>
             <MiniBar wins={s.wins} losses={s.losses} total={s.wins + s.losses} color={s.color} />
@@ -803,7 +814,7 @@ function StatsView({ tips, combos, loading }) {
                     <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace" }}>
                       <span style={{ color: "#66bb6a" }}>{lw}W</span>
                       <span style={{ color: "#ef5350" }}>{ll}L</span>
-                      <span style={{ color: lr !== null ? (lr >= 60 ? "#66bb6a" : lr >= 40 ? GOLD : "#ef5350") : "#888" }}>{lr !== null ? `${lr}%` : "—"}</span>
+                      <span style={{ color: lr !== null ? (lr >= 60 ? "#66bb6a" : lr >= 40 ? GOLD : "#ef5350") : "#888" }}>{lr !== null ? `${lr}%` : "-"}</span>
                     </div>
                   </div>
                   <MiniBar wins={lw} losses={ll} total={lw+ll} color={league.color} />
@@ -834,7 +845,7 @@ function StatsView({ tips, combos, loading }) {
                 <div style={{ display: "flex", gap: "10px", fontSize: "11px", fontFamily: "monospace" }}>
                   <span style={{ color: "#66bb6a" }}>{cw}W</span>
                   <span style={{ color: "#ef5350" }}>{cl}L</span>
-                  <span style={{ color: cr !== null ? (cr >= 60 ? "#66bb6a" : cr >= 40 ? GOLD : "#ef5350") : "#888" }}>{cr !== null ? `${cr}%` : "—"}</span>
+                  <span style={{ color: cr !== null ? (cr >= 60 ? "#66bb6a" : cr >= 40 ? GOLD : "#ef5350") : "#888" }}>{cr !== null ? `${cr}%` : "-"}</span>
                 </div>
               </div>
               <MiniBar wins={cw} losses={cl} total={cw+cl} color={CONFIDENCE_CONFIG[c].color} />
@@ -1299,7 +1310,7 @@ export default function App() {
                   {form.sport === "tennis" ? "DRAPEAU JOUEUR 1" : "DRAPEAU ÉQUIPE 1"} {form.flag1 && <span style={{ fontSize: "16px" }}>{form.flag1}</span>}
                 </div>
                 <select value={form.flag1} onChange={e => setForm({ ...form, flag1: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
-                  <option value="">— Sélectionner</option>
+                  <option value="">- Sélectionner</option>
                   {TENNIS_FLAGS.map(f => <option key={f.code} value={f.code}>{f.code} {f.label}</option>)}
                 </select>
               </div>
@@ -1308,7 +1319,7 @@ export default function App() {
                   {form.sport === "tennis" ? "DRAPEAU JOUEUR 2" : "DRAPEAU ÉQUIPE 2"} {form.flag2 && <span style={{ fontSize: "16px" }}>{form.flag2}</span>}
                 </div>
                 <select value={form.flag2} onChange={e => setForm({ ...form, flag2: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
-                  <option value="">— Sélectionner</option>
+                  <option value="">- Sélectionner</option>
                   {TENNIS_FLAGS.map(f => <option key={f.code} value={f.code}>{f.code} {f.label}</option>)}
                 </select>
               </div>
