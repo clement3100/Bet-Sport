@@ -376,10 +376,17 @@ function TipCard({ tip, onDelete, onToggleResult, onUpdateScore, onUpdatePlayerS
           </div>
         )}
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
-          <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{tip.bet}</div>
-          {tip.odds && <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "12px", fontFamily: "monospace" }}>{tip.odds}</div>}
-        </div>
+        {!(tip.sport === "nba" && tip.player_stats?.length > 0) && (
+          <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "10px" }}>
+            <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700", whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{tip.bet}</div>
+            {tip.odds && <div style={{ background: BG3, borderRadius: "6px", padding: "4px 10px", color: "#fff", fontSize: "12px", fontFamily: "monospace" }}>{tip.odds}</div>}
+          </div>
+        )}
+        {tip.sport === "nba" && tip.player_stats?.length > 0 && tip.odds && (
+          <div style={{ marginBottom: "10px" }}>
+            <div style={{ display: "inline-block", background: BG3, borderRadius: "6px", padding: "4px 10px", color: GOLD, fontSize: "12px", fontFamily: "monospace", fontWeight: "700" }}>Cote globale : {tip.odds}</div>
+          </div>
+        )}
 
         {tip.note && <div style={{ color: "#555", fontSize: "12px", fontStyle: "italic", marginBottom: "10px" }}>{tip.note}</div>}
 
@@ -895,7 +902,9 @@ export default function App() {
   const handleAdd = async () => {
     if (!form.match || form.confidence === 0) return;
     setSaving(true);
-    const betLabel = form.bet === "Personnalisé" ? form.customBet : form.bet;
+    const betLabel = form.sport === "nba" && form.player_stats?.length > 0 
+      ? "Stats joueurs" 
+      : form.bet === "Personnalisé" ? form.customBet : form.bet;
     const currentSerie = getCurrentSerie();
     const { data } = await supabase.from("tips").insert([{
       sport: form.sport, league: form.league, match: form.match,
@@ -1267,31 +1276,36 @@ export default function App() {
             <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>HEURE DU MATCH</div>
             <input value={form.time || ""} onChange={e => setForm({ ...form, time: e.target.value })} placeholder="Ex: 21:00" style={inputStyle} />
           </div>
+
+          {form.sport !== "nba" && (
+            <div style={{ marginBottom: "16px" }}>
+              <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>TYPE DE PARI</div>
+              <select value={form.bet} onChange={e => setForm({ ...form, bet: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
+                {BET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
+              </select>
+              {form.bet === "Personnalisé" && (
+                <textarea value={form.customBet} onChange={e => setForm({ ...form, customBet: e.target.value })} placeholder="Décris ton pari..." style={{ ...inputStyle, marginTop: "8px", minHeight: "70px", resize: "vertical" }} />
+              )}
+            </div>
+          )}
+
           <div style={{ marginBottom: "16px" }}>
-            <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>TYPE DE PARI</div>
-            <select value={form.bet} onChange={e => setForm({ ...form, bet: e.target.value })} style={{ ...inputStyle, cursor: "pointer" }}>
-              {BET_TYPES.map(b => <option key={b} value={b}>{b}</option>)}
-            </select>
-            {form.bet === "Personnalisé" && (
-              <textarea value={form.customBet} onChange={e => setForm({ ...form, customBet: e.target.value })} placeholder="Décris ton pari..." style={{ ...inputStyle, marginTop: "8px", minHeight: "70px", resize: "vertical" }} />
-            )}
-          </div>
-          <div style={{ marginBottom: "16px" }}>
-            <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>COTE</div>
+            <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>{form.sport === "nba" ? "COTE GLOBALE" : "COTE"}</div>
             <input value={form.odds} onChange={e => setForm({ ...form, odds: e.target.value })} placeholder="Ex: 1.85" style={inputStyle} type="number" step="0.01" />
           </div>
+
           <div style={{ marginBottom: "16px" }}>
             <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>CONFIANCE</div>
             <StarRating value={form.confidence} onChange={v => setForm({ ...form, confidence: v })} />
           </div>
-          <div style={{ marginBottom: "28px" }}>
+          <div style={{ marginBottom: form.sport === "nba" ? "16px" : "28px" }}>
             <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>NOTE (optionnel)</div>
             <textarea value={form.note} onChange={e => setForm({ ...form, note: e.target.value })} placeholder="Analyse, contexte..." style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }} />
           </div>
 
           {form.sport === "nba" && (
             <div style={{ marginBottom: "28px" }}>
-              <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>STATS JOUEURS (optionnel)</div>
+              <div style={{ color: "#555", fontSize: "10px", fontFamily: "monospace", letterSpacing: "2px", marginBottom: "10px" }}>STATS JOUEURS</div>
               {(form.player_stats || []).map((ps, i) => (
                 <div key={i} style={{ background: BG3, borderRadius: "10px", padding: "12px", marginBottom: "8px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
