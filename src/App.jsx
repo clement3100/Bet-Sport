@@ -285,7 +285,7 @@ function getNbaMax(stat, target) {
       return { home: parts[0].trim(), away: parts.slice(1).join(sep).trim() };
     }
   }
-  return { home: matchStr, away: "" };
+return { home: matchStr, away: "" };
 }
 
 function GoldDivider() {
